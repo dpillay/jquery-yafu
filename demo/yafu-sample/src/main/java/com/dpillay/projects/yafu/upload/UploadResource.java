@@ -11,111 +11,128 @@ import org.slf4j.LoggerFactory;
 import org.springframework.web.multipart.MultipartFile;
 
 public class UploadResource {
-	protected static Logger log = LoggerFactory.getLogger(UploadResource.class);
+    protected static Logger log = LoggerFactory.getLogger(UploadResource.class);
 
-	protected volatile double lastProgress;
-	protected volatile long bytesUploaded;
-	protected volatile long bytesTotal;
-	protected volatile boolean done;
+    protected volatile double lastProgress;
+    protected volatile long bytesUploaded;
+    protected volatile long bytesTotal;
+    protected volatile boolean done;
 
-	protected final transient OutputStream outputStream;
-	protected final transient File outputFile;
-	protected final transient InputStream inputStream;
-	protected final String key;
-	protected final String outputBaseDir;
+    protected final transient OutputStream outputStream;
+    protected final transient File outputFile;
+    protected final transient InputStream inputStream;
+    protected final String key;
+    protected final String outputBaseDir;
 
-	public UploadResource(String sessionId, String key, MultipartFile file,
-			String outputBaseDir) throws IOException {
-		super();
-		this.key = key;
-		this.outputBaseDir = outputBaseDir;
-		this.bytesUploaded = 0;
-		this.bytesTotal = file.getSize();
-		this.done = false;
+    public UploadResource(String sessionId, String key, MultipartFile file, String outputBaseDir) throws IOException {
+        super();
+        this.key = key;
+        this.outputBaseDir = outputBaseDir;
+        this.bytesUploaded = 0;
+        this.bytesTotal = file.getSize();
+        this.done = false;
 
-		synchronized (this) {
-			this.inputStream = file.getInputStream();
-			this.outputFile = new File(outputBaseDir + "/"
-					+ file.getOriginalFilename().replace(" ", "_") + "_"
-					+ sessionId);
-			this.outputStream = new FileOutputStream(this.outputFile);
-		}
-	}
+        synchronized (this) {
+            this.inputStream = file.getInputStream();
+            this.outputFile = new File(outputBaseDir + "/" + file.getOriginalFilename().replace(" ", "_") + "_"
+                    + sessionId);
+            this.outputStream = new FileOutputStream(this.outputFile);
+        }
+    }
 
-	protected synchronized void updateProgress() {
-		this.lastProgress = Double.valueOf(this.bytesUploaded)
-				/ Double.valueOf(this.bytesTotal);
-		if (log.isDebugEnabled())
-			log.debug("For key: {}, uploaded : {} / {} -> progress {} ",
-					new Object[] { this.key, this.bytesUploaded,
-							this.bytesTotal, this.lastProgress });
-	}
+    public synchronized void update() {
+        this.lastProgress = Double.valueOf(this.bytesUploaded) / Double.valueOf(this.bytesTotal);
+        if (log.isDebugEnabled())
+            log.debug("For key: {}, uploaded : {} / {} -> progress {} ", new Object[] { this.key, this.bytesUploaded,
+                    this.bytesTotal, this.lastProgress });
+    }
 
-	public synchronized void read() {
-		if (!this.done) {
-			byte[] bytes = new byte[4096];
-			int bytesRead = 0;
-			double progressLimit = this.lastProgress + 0.05;
-			try {
-				while ((bytesRead = this.inputStream.read(bytes)) != -1) {
-					this.bytesUploaded += bytesRead;
-					this.outputStream.write(bytes);
-					this.updateProgress();
-					if (this.lastProgress > progressLimit) {
-						break;
-					}
-				}
-			} catch (Exception e) {
-				log.error(e.getLocalizedMessage(), e);
-			}
+    public synchronized void read() {
+        if (!this.done) {
+            byte[] bytes = new byte[4096];
+            int bytesRead = 0;
+            double progressLimit = this.lastProgress + 0.05;
+            try {
+                while ((bytesRead = this.inputStream.read(bytes)) != -1) {
+                    this.bytesUploaded += bytesRead;
+                    this.outputStream.write(bytes);
+                    this.update();
+                    if (this.lastProgress > progressLimit) {
+                        break;
+                    }
+                }
+            } catch (Exception e) {
+                log.error(e.getLocalizedMessage(), e);
+            }
 
-			if (this.bytesTotal == this.bytesUploaded) {
-				this.done = true;
-			}
-		}
-	}
+            if (this.bytesTotal == this.bytesUploaded) {
+                this.done = true;
+                try {
+                    this.inputStream.close();
+                    this.outputStream.close();
+                } catch (IOException e) {
+                    log.error(e.getLocalizedMessage(), e);
+                }
+            }
+        }
+    }
 
-	public double getLastProgress() {
-		return lastProgress;
-	}
+    public synchronized void cancel() throws IOException {
+        this.close();
+        this.delete();
+    }
 
-	public void setLastProgress(double lastProgress) {
-		this.lastProgress = lastProgress;
-	}
+    public synchronized void close() throws IOException {
+        this.done = true;
+        this.outputStream.close();
+        this.inputStream.close();
+    }
 
-	public long getBytesUploaded() {
-		return bytesUploaded;
-	}
+    public synchronized void delete() {
+        this.outputFile.delete();
+    }
 
-	public void setBytesUploaded(long bytesUploaded) {
-		this.bytesUploaded = bytesUploaded;
-	}
+    public double getLastProgress() {
+        return lastProgress;
+    }
 
-	public long getBytesTotal() {
-		return bytesTotal;
-	}
+    public void setLastProgress(double lastProgress) {
+        this.lastProgress = lastProgress;
+    }
 
-	public void setBytesTotal(long bytesTotal) {
-		this.bytesTotal = bytesTotal;
-	}
+    public long getBytesUploaded() {
+        return bytesUploaded;
+    }
 
-	public boolean isDone() {
-		return done;
-	}
+    public void setBytesUploaded(long bytesUploaded) {
+        this.bytesUploaded = bytesUploaded;
+    }
 
-	public void setDone(boolean done) {
-		this.done = done;
-	}
+    public long getBytesTotal() {
+        return bytesTotal;
+    }
 
-	public OutputStream getOutputStream() {
-		return outputStream;
-	}
+    public void setBytesTotal(long bytesTotal) {
+        this.bytesTotal = bytesTotal;
+    }
 
-	public File getOutputFile() {
-		return outputFile;
-	}
+    public boolean isDone() {
+        return done;
+    }
 
-	public InputStream getInputStream() {
-		return inputStream;
-	}
+    public void setDone(boolean done) {
+        this.done = done;
+    }
+
+    public OutputStream getOutputStream() {
+        return outputStream;
+    }
+
+    public File getOutputFile() {
+        return outputFile;
+    }
+
+    public InputStream getInputStream() {
+        return inputStream;
+    }
 }
