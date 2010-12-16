@@ -1,0 +1,19 @@
+Converts any valid element to an overlaid input form via an iFrame.
+Progress mechanism expects a JSON of the format: { bytesUploaded : <number>, bytesTotal : <number> }
+
+Sample code:
+    $("#upload").yafu({
+        control : {
+            type : "link",
+            id : "upload_link",
+            name : "Import Data"
+        },
+        formId : "upload_form",
+        uploadUrl : "fileUpload",
+        method : "post",
+        labelId : "upload_label",
+        fileInput : "file",
+        overlayId : "div_overlay",
+        progressUrl : "uploadStatus",
+        useKey : true
+    });
