@@ -128,7 +128,7 @@
                             value : percentage
                         });
                         if (percentage != 100) {
-                            setTimeout(yafuProgress, 500);
+                            setTimeout(yafuProgress, 5000);
                         } else {
                             yafuComplete();
                         }

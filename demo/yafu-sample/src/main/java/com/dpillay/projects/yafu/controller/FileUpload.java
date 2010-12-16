@@ -29,6 +29,9 @@ public class FileUpload implements Serializable {
 	private static Logger log = LoggerFactory.getLogger(FileUpload.class);
 	private final String BASE_DIR = "/tmp/yafu";
 	private transient Map<String, FileUploadStatus> uploadMap = new ConcurrentHashMap<String, FileUpload.FileUploadStatus>();
+	private transient OutputStream os = null;
+	private transient File dumpedFile = null;
+	private transient InputStream is = null;
 
 	public FileUpload() {
 		log.info("file upload created");
@@ -43,47 +46,15 @@ public class FileUpload implements Serializable {
 		log.info("Received upload file: {} with key: {}",
 				file.getOriginalFilename(), key);
 		if (!file.isEmpty()) {
-			OutputStream os = null;
-			File dumpedFile = null;
-			FileUploadStatus status = getFileUploadStatus(key);
 			try {
-				InputStream is = file.getInputStream();
+				getFileUploadStatus(key, file);
+				is = file.getInputStream();
 				dumpedFile = new File(BASE_DIR + "/"
 						+ file.getOriginalFilename().replace(" ", "_") + "_"
 						+ request.getSession().getId());
 				os = new FileOutputStream(dumpedFile);
-				byte[] bytes = new byte[4096];
-				int bytesRead = 0;
-				double progressLimit = 0.01;
-				long bytesUploaded = 0;
-				try {
-					while ((bytesRead = is.read(bytes)) != -1) {
-						bytesUploaded += bytesRead;
-						status.update(key, bytesUploaded, file.getSize());
-						os.write(bytes);
-						if (progressLimit < 1.0
-								&& (Double.valueOf(bytesUploaded) / Double
-										.valueOf(file.getSize())) > progressLimit) {
-							log.debug("Sleeping for key {} ", key);
-							try {
-								Thread.sleep(100);
-							} catch (Exception e) {
-							}
-							progressLimit += 0.01;
-						}
-					}
-				} catch (Exception e) {
-					log.error(e.getLocalizedMessage());
-				}
-
 			} catch (IOException e) {
-				log.error(e.getLocalizedMessage());
-			} finally {
-				try {
-					os.close();
-				} catch (IOException e) {
-					log.error(e.getLocalizedMessage());
-				}
+				log.error(e.getLocalizedMessage(), e);
 			}
 			return "{ \"uploaded\" : true }";
 		} else {
@@ -91,10 +62,10 @@ public class FileUpload implements Serializable {
 		}
 	}
 
-	private FileUploadStatus getFileUploadStatus(String key) {
+	private FileUploadStatus getFileUploadStatus(String key, MultipartFile file) {
 		FileUploadStatus fileUploadStatus = this.uploadMap.get(key);
 		if (fileUploadStatus == null) {
-			fileUploadStatus = new FileUploadStatus();
+			fileUploadStatus = new FileUploadStatus(0, file.getSize(), false);
 			this.uploadMap.put(key, fileUploadStatus);
 		}
 		return fileUploadStatus;
@@ -104,6 +75,15 @@ public class FileUpload implements Serializable {
 
 		private volatile long bytesUploaded;
 		private volatile long bytesTotal;
+		private volatile boolean done = false;
+
+		public FileUploadStatus(long bytesUploaded, long bytesTotal,
+				boolean done) {
+			super();
+			this.bytesUploaded = bytesUploaded;
+			this.bytesTotal = bytesTotal;
+			this.done = done;
+		}
 
 		public void update(String key, long pBytesRead, long pContentLength) {
 			if (log.isDebugEnabled())
@@ -120,25 +100,47 @@ public class FileUpload implements Serializable {
 		public long getBytesTotal() {
 			return bytesTotal;
 		}
-
 	}
 
-	// @RequestMapping(value = "/uploadStatus", method = RequestMethod.GET)
-	// public @ResponseBody
-	// String uploadStatus(
-	// @RequestParam(value = "key", required = false) String key) {
-	// FileUploadStatus uploadStatus = this.uploadMap.get(key);
-	// String jsonStatus = null;
-	// if (uploadStatus != null) {
-	// jsonStatus = "{ \"bytesUploaded\": "
-	// + uploadStatus.getBytesUploaded() + ","
-	// + "\"bytesTotal\" : " + uploadStatus.getBytesTotal() + " }";
-	// } else {
-	// jsonStatus = "{ \"bytesUploaded\": 0, \"bytesTotal\" : -1 }";
-	// }
-	// if (log.isDebugEnabled())
-	// log.debug("For key: {}, returning status : {}", new Object[] { key,
-	// jsonStatus });
-	// return jsonStatus;
-	// }
+	@RequestMapping(value = "/uploadStatus", method = RequestMethod.GET)
+	public @ResponseBody
+	String uploadStatus(
+			@RequestParam(value = "key", required = false) String key) {
+		FileUploadStatus uploadStatus = this.uploadMap.get(key);
+		String jsonStatus = "{ \"bytesUploaded\": 0, \"bytesTotal\" : -1 }";
+		if (uploadStatus != null && !uploadStatus.done) {
+			synchronized (uploadStatus) {
+				byte[] bytes = new byte[4096];
+				int bytesRead = 0;
+				double progressLimit = 0.01;
+				long bytesUploaded = uploadStatus.getBytesUploaded();
+				try {
+					while ((bytesRead = is.read(bytes)) != -1) {
+						bytesUploaded += bytesRead;
+						uploadStatus.update(key, bytesUploaded,
+								uploadStatus.getBytesTotal());
+						os.write(bytes);
+						if (Double.valueOf(bytesUploaded)
+								/ Double.valueOf(uploadStatus.getBytesTotal()) > progressLimit) {
+							break;
+						}
+					}
+				} catch (Exception e) {
+					log.error(e.getLocalizedMessage(), e);
+				}
+
+				jsonStatus = "{ \"bytesUploaded\": "
+						+ uploadStatus.getBytesUploaded() + ","
+						+ "\"bytesTotal\" : " + uploadStatus.getBytesTotal()
+						+ " }";
+				if (uploadStatus.bytesTotal == uploadStatus.bytesUploaded) {
+					uploadStatus.done = true;
+				}
+			}
+		}
+		if (log.isDebugEnabled())
+			log.debug("For key: {}, returning status : {}", new Object[] { key,
+					jsonStatus });
+		return jsonStatus;
+	}
 }
