@@ -69,7 +69,9 @@
                 formId : "yafu_upload_form",
                 url : "fileUpload",
                 method : "post",
-                inputControlId : "file"
+                inputControlId : "file",
+                onSubmit : function() {
+                }
             },
             progress : {
                 labelId : "yafu_upload_label",

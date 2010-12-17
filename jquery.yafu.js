@@ -7,7 +7,8 @@
  * 
  * 
  * 
- * Sample code: <code>
+ * Sample code:
+<code>
 $("#upload").yafu({
     upload : {
         control : {
@@ -20,7 +21,9 @@ $("#upload").yafu({
         formId : "yafu_upload_form",
         url : "fileUpload",
         method : "post",
-        inputControlId : "file"
+        inputControlId : "file",
+        onSubmit : function() {
+        }
     },
     progress : {
         labelId : "yafu_upload_label",
@@ -64,7 +67,9 @@ $("#upload").yafu({
                 formId : "yafu_upload_form",
                 url : "fileUpload",
                 method : "post",
-                inputControlId : "file"
+                inputControlId : "file",
+                onSubmit : function() {
+                }
             },
             progress : {
                 labelId : "yafu_upload_label",
@@ -156,6 +161,8 @@ $("#upload").yafu({
                     height : "5%"
                 });
                 parent.append(label).append(progress).append(cancelLink);
+
+                _options.upload.onSubmit();
 
                 submitBtn.click();
                 yafu_iframe.empty();
