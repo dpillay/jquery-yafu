@@ -43,7 +43,7 @@
 	src="<c:url value="/scripts/jquery-yafu/jquery.md5.js" /> "></script>
 
 <script type="text/javascript"
-	src="<c:url value="/scripts/jquery-yafu/jquery.yafu.js" /> "></script>
+	src="<c:url value="/scripts/jquery-yafu/jquery.yafu-1.0.0.js" /> "></script>
 
 </head>
 
