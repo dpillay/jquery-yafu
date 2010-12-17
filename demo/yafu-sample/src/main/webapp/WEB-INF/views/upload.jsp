@@ -61,26 +61,26 @@
             upload : {
                 control : {
                     type : "link",
-                    id : "upload_link",
+                    id : "yafu_upload_link",
                     name : "Upload"
                 },
-                divOverlayId : "div_overlay",
+                divOverlayId : "yafu_div_overlay",
                 zIndexOverlay : "1100",
-                formId : "upload_form",
+                formId : "yafu_upload_form",
                 url : "fileUpload",
                 method : "post",
                 inputControlId : "file"
             },
             progress : {
-                labelId : "upload_label",
-                progressBarId : "upload_progressbar",
+                labelId : "yafu_upload_label",
+                progressBarId : "yafu_upload_progressbar",
                 url : "uploadStatus",
                 useKey : true,
                 onComplete : function(data) {
                 }
             },
             cancel : {
-                linkId : "cancel_upload",
+                linkId : "yafu_cancel_upload",
                 url : "cancelUpload",
                 onCancel : function(data) {
                 }

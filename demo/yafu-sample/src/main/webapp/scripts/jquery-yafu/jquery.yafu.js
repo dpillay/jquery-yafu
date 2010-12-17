@@ -34,15 +34,36 @@
 (function($) {
     $.fn.yafu = function() {
         var parent = $(this);
-        var options = arguments[0] || {};
-        if (options.progress.onComplete == undefined) {
-            options.progress.onComplete = function() {
-            };
-        }
-        if (options.progress.onCancel == undefined) {
-            options.progress.onCancel = function() {
-            };
-        }
+        var options = {
+            upload : {
+                control : {
+                    type : "link",
+                    id : "yafu_upload_link",
+                    name : "Upload"
+                },
+                divOverlayId : "yafu_div_overlay",
+                zIndexOverlay : "1100",
+                formId : "yafu_upload_form",
+                url : "fileUpload",
+                method : "post",
+                inputControlId : "file"
+            },
+            progress : {
+                labelId : "yafu_upload_label",
+                progressBarId : "yafu_upload_progressbar",
+                url : "uploadStatus",
+                useKey : true,
+                onComplete : function(data) {
+                }
+            },
+            cancel : {
+                linkId : "yafu_cancel_upload",
+                url : "cancelUpload",
+                onCancel : function(data) {
+                }
+            }
+        };
+        options = $.extend(options, arguments[0]);
         var btn = null;
         if (options.upload.control.type == "button") {
             btn = $('<input type=button />');
@@ -96,19 +117,11 @@
             setTimeout(function() {
                 var canceled = false;
                 var label = $('<label></label>');
-                if (options.progress.labelId != null && options.progress.labelId != '') {
-                    label.attr("id", options.progress.labelId);
-                } else {
-                    label.attr("id", "yafu_label");
-                }
+                label.attr("id", options.progress.labelId);
                 label.html(input.val() + " - 0%");
                 var cancelLink = $('<a href="javascript:void"></a>');
                 cancelLink.html("Cancel");
-                if (options.cancel.linkId != null && options.cancel.linkId != '') {
-                    cancelLink.attr("id", options.cancel.linkId);
-                } else {
-                    cancelLink.attr("id", "yafu_cancel_link");
-                }
+                cancelLink.attr("id", options.cancel.linkId);
                 cancelLink.click(function() {
                     canceled = true;
                 });
