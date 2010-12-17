@@ -5,6 +5,34 @@ jquery-yafu
 ~ Please find the server side Java component in the "src" folder.
 ~ For a live demo, please check the "demo/yafu-sample" application.
 
+To include jquery-yafu in the jsp, you'll need:
+
+<code>
+<link rel="stylesheet"
+        href="<c:url value="/styles/redmond/jquery-ui-1.8.6.custom.css" />"
+        type="text/css" media="screen, projection">
+
+<script type="text/javascript"
+        src="<c:url value="/scripts/jquery-1.4.3.min.js" /> "></script>
+
+<script type="text/javascript"
+        src="<c:url value="/scripts/jquery-ui-1.8.5.custom.min.js" /> "></script>
+
+<script type="text/javascript"
+        src="<c:url value="/scripts/json.min.js" /> "></script>
+
+<script type="text/javascript"
+        src="<c:url value="/scripts/jquery-yafu/jquery-custom-file-input.js" /> "></script>
+
+<script type="text/javascript"
+        src="<c:url value="/scripts/jquery-yafu/jquery.md5.js" /> "></script>
+
+<script type="text/javascript"
+        src="<c:url value="/scripts/jquery-yafu/jquery.yafu.js" /> "></script>
+</code>
+
+Of course the theme you use depends on you.
+
 Sample client side code:
 
 <code>
