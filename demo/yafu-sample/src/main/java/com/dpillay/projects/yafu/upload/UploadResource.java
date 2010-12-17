@@ -55,7 +55,7 @@ public class UploadResource {
             try {
                 while ((bytesRead = this.inputStream.read(bytes)) != -1) {
                     this.bytesUploaded += bytesRead;
-                    this.outputStream.write(bytes);
+                    this.outputStream.write(bytes, 0, bytesRead);
                     this.update();
                     if (this.lastProgress > progressLimit) {
                         break;
