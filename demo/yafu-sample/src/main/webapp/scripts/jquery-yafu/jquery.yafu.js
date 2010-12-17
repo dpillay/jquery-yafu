@@ -8,21 +8,35 @@
  * 
  * 
  * Sample code: <code>
- * $("#upload").yafu({
-        control : {
-            type : "link",
-            id : "upload_link",
-            name : "Import Data"
-        },
-        formId : "upload_form",
-        uploadUrl : "fileUpload",
-        method : "post",
-        labelId : "upload_label",
-        fileInput : "file",
-        overlayId : "div_overlay",
-        progressUrl : "uploadStatus",
-        useKey : true
-    });
+        $("#upload").yafu({
+            upload : {
+                control : {
+                    type : "link",
+                    id : "yafu_upload_link",
+                    name : "Upload"
+                },
+                divOverlayId : "yafu_div_overlay",
+                zIndexOverlay : "1100",
+                formId : "yafu_upload_form",
+                url : "fileUpload",
+                method : "post",
+                inputControlId : "file"
+            },
+            progress : {
+                labelId : "yafu_upload_label",
+                progressBarId : "yafu_upload_progressbar",
+                url : "uploadStatus",
+                useKey : true,
+                onComplete : function(data) {
+                }
+            },
+            cancel : {
+                linkId : "yafu_cancel_upload",
+                url : "cancelUpload",
+                onCancel : function(data) {
+                }
+            }
+        });
   </code>
  * 
  * @alias Dinesh Pillay < code [AT] dpillay [DOT] eml [DOT] cc >
@@ -34,7 +48,7 @@
 (function($) {
     $.fn.yafu = function() {
         var parent = $(this);
-        var options = {
+        var _options = {
             upload : {
                 control : {
                     type : "link",
@@ -63,21 +77,21 @@
                 }
             }
         };
-        options = $.extend(options, arguments[0]);
+        _options = $.extend(_options, arguments[0]);
         var btn = null;
-        if (options.upload.control.type == "button") {
+        if (_options.upload.control.type == "button") {
             btn = $('<input type=button />');
         } else {
             btn = $('<a href="javascript:void" />');
         }
-        btn.attr("id", options.upload.control.id);
-        btn.append(options.upload.control.name);
+        btn.attr("id", _options.upload.control.id);
+        btn.append(_options.upload.control.name);
         $(this).append(btn);
 
         btn.file({
-            zIndex : options.upload.zIndexOverlay,
-            fileInput : options.upload.inputControlId,
-            overlayId : options.upload.divOverlayId
+            zIndex : _options.upload.zIndexOverlay,
+            fileInput : _options.upload.inputControlId,
+            overlayId : _options.upload.divOverlayId
         }).choose(function(e, input) {
             var submitBtn = $('<input id="submit" name="submit" type=submit />');
             var yafu_iframe = $('<iframe></iframe>').attr("id", "yafu_iframe").attr("name", "yafu_iframe");
@@ -87,10 +101,10 @@
             yafu_iframe.attr("width", "1");
             yafu_iframe.load(function() {
                 var form = $('<form></form>');
-                form.attr("id", options.upload.formId);
-                form.attr("name", options.upload.formId);
-                form.attr("action", options.upload.url);
-                form.attr("method", options.upload.method);
+                form.attr("id", _options.upload.formId);
+                form.attr("name", _options.upload.formId);
+                form.attr("action", _options.upload.url);
+                form.attr("method", _options.upload.method);
                 form.attr("target", "yafu_iframe");
                 form.attr("enctype", "multipart/form-data");
 
@@ -117,16 +131,16 @@
             setTimeout(function() {
                 var canceled = false;
                 var label = $('<label></label>');
-                label.attr("id", options.progress.labelId);
+                label.attr("id", _options.progress.labelId);
                 label.html(input.val() + " - 0%");
                 var cancelLink = $('<a href="javascript:void"></a>');
                 cancelLink.html("Cancel");
-                cancelLink.attr("id", options.cancel.linkId);
+                cancelLink.attr("id", _options.cancel.linkId);
                 cancelLink.click(function() {
                     canceled = true;
                 });
                 var progress = $('<div></div>');
-                progress.attr("id", options.progress.progressBarId);
+                progress.attr("id", _options.progress.progressBarId);
                 progress.progressbar({
                     value : 0
                 });
@@ -141,14 +155,14 @@
                 });
 
                 function yafuComplete() {
-                    $("#" + options.upload.divOverlayId).remove();
-                    options.progress.onComplete();
+                    $("#" + _options.upload.divOverlayId).remove();
+                    _options.progress.onComplete();
                 }
 
                 function yafuProgress() {
-                    var progressUrl = options.progress.url;
+                    var progressUrl = _options.progress.url;
                     var keyParam = {};
-                    if (options.progress.useKey) {
+                    if (_options.progress.useKey) {
                         keyParam = {
                             "key" : key.val()
                         };
@@ -167,7 +181,7 @@
                                 yafuComplete();
                             }
                         } else {
-                            var cancelUrl = options.cancel.url;
+                            var cancelUrl = _options.cancel.url;
                             cancelLink.remove();
                             progress.remove();
                             label.html(input.val() + " - Canceled");
