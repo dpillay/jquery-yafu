@@ -35,24 +35,28 @@
     $.fn.yafu = function() {
         var parent = $(this);
         var options = arguments[0] || {};
-        if (options.onComplete == undefined) {
-            options.onComplete = function() {
+        if (options.progress.onComplete == undefined) {
+            options.progress.onComplete = function() {
+            };
+        }
+        if (options.progress.onCancel == undefined) {
+            options.progress.onCancel = function() {
             };
         }
         var btn = null;
-        if (options.control.type == "button") {
+        if (options.upload.control.type == "button") {
             btn = $('<input type=button />');
         } else {
             btn = $('<a href="javascript:void" />');
         }
-        btn.attr("id", options.control.id);
-        btn.append(options.control.name);
+        btn.attr("id", options.upload.control.id);
+        btn.append(options.upload.control.name);
         $(this).append(btn);
 
         btn.file({
-            zIndex : "1100",
-            fileInput : options.fileInput,
-            overlayId : options.overlayId
+            zIndex : options.upload.zIndexOverlay,
+            fileInput : options.upload.inputControlId,
+            overlayId : options.upload.divOverlayId
         }).choose(function(e, input) {
             var submitBtn = $('<input id="submit" name="submit" type=submit />');
             var yafu_iframe = $('<iframe></iframe>').attr("id", "yafu_iframe").attr("name", "yafu_iframe");
@@ -62,10 +66,10 @@
             yafu_iframe.attr("width", "1");
             yafu_iframe.load(function() {
                 var form = $('<form></form>');
-                form.attr("id", options.formId);
-                form.attr("name", options.formId);
-                form.attr("action", options.uploadUrl);
-                form.attr("method", options.method);
+                form.attr("id", options.upload.formId);
+                form.attr("name", options.upload.formId);
+                form.attr("action", options.upload.url);
+                form.attr("method", options.upload.method);
                 form.attr("target", "yafu_iframe");
                 form.attr("enctype", "multipart/form-data");
 
@@ -90,18 +94,33 @@
             parent.empty().append(yafu_iframe);
 
             setTimeout(function() {
+                var canceled = false;
                 var label = $('<label></label>');
-                if (options.labelId != null && options.labelId != '') {
-                    label.attr("id", options.labelId);
+                if (options.progress.labelId != null && options.progress.labelId != '') {
+                    label.attr("id", options.progress.labelId);
                 } else {
                     label.attr("id", "yafu_label");
                 }
                 label.html(input.val() + " - 0%");
+                var cancelLink = $('<a href="javascript:void"></a>');
+                cancelLink.html("Cancel");
+                if (options.cancel.linkId != null && options.cancel.linkId != '') {
+                    cancelLink.attr("id", options.cancel.linkId);
+                } else {
+                    cancelLink.attr("id", "yafu_cancel_link");
+                }
+                cancelLink.click(function() {
+                    canceled = true;
+                });
                 var progress = $('<div></div>');
+                progress.attr("id", options.progress.progressBarId);
                 progress.progressbar({
                     value : 0
                 });
-                parent.append(label).append(progress);
+                progress.css({
+                    height : "5%"
+                });
+                parent.append(label).append(progress).append(cancelLink);
 
                 submitBtn.click();
                 yafu_iframe.empty();
@@ -109,14 +128,14 @@
                 });
 
                 function yafuComplete() {
-                    $("#" + options.overlayId).remove();
-                    onComplete();
+                    $("#" + options.upload.divOverlayId).remove();
+                    options.progress.onComplete();
                 }
 
                 function yafuProgress() {
-                    var progressUrl = options.progressUrl;
+                    var progressUrl = options.progress.url;
                     var keyParam = {};
-                    if (options.useKey) {
+                    if (options.progress.useKey) {
                         keyParam = {
                             "key" : key.val()
                         };
@@ -127,10 +146,21 @@
                         progress.progressbar({
                             value : percentage
                         });
-                        if (percentage != 100) {
-                            setTimeout(yafuProgress, 5);
+                        if (!canceled) {
+                            if (percentage != 100) {
+                                setTimeout(yafuProgress, 5);
+                            } else {
+                                cancelLink.remove();
+                                yafuComplete();
+                            }
                         } else {
-                            yafuComplete();
+                            var cancelUrl = options.cancel.url;
+                            cancelLink.remove();
+                            progress.remove();
+                            label.html(input.val() + " - Canceled");
+                            $.getJSON(cancelUrl, keyParam, function(data) {
+                                // Anything?
+                            });
                         }
                     });
                 }

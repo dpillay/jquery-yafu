@@ -55,23 +55,37 @@
 </body>
 
 <script type="text/javascript">
-	$(document).ready(function() {
-		$("#upload").empty();
-		$("#upload").yafu({
-			control : {
-				type : "link",
-				id : "upload_link",
-				name : "Upload"
-			},
-			formId : "upload_form",
-			uploadUrl : "fileUpload",
-			method : "post",
-			labelId : "upload_label",
-			fileInput : "file",
-			overlayId : "div_overlay",
-			progressUrl : "uploadStatus",
-			useKey : true
-		});
-	});
+    $(document).ready(function() {
+        $("#upload").empty();
+        $("#upload").yafu({
+            upload : {
+                control : {
+                    type : "link",
+                    id : "upload_link",
+                    name : "Upload"
+                },
+                divOverlayId : "div_overlay",
+                zIndexOverlay : "1100",
+                formId : "upload_form",
+                url : "fileUpload",
+                method : "post",
+                inputControlId : "file"
+            },
+            progress : {
+                labelId : "upload_label",
+                progressBarId : "upload_progressbar",
+                url : "uploadStatus",
+                useKey : true,
+                onComplete : function(data) {
+                }
+            },
+            cancel : {
+                linkId : "cancel_upload",
+                url : "cancelUpload",
+                onCancel : function(data) {
+                }
+            }
+        });
+    });
 </script>
 </html>
