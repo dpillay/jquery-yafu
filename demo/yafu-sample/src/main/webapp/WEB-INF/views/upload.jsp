@@ -5,7 +5,7 @@
 
 <html>
 <head>
-<title>Create Account</title>
+<title>Yafu Sample Application</title>
 <link rel="stylesheet"
 	href="<c:url value="/styles/blueprint/screen.css" />" type="text/css"
 	media="screen, projection">
