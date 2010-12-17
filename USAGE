@@ -1,8 +1,13 @@
-Converts any valid element to an overlaid input form via an iFrame.
-Progress mechanism expects a JSON of the format: { bytesUploaded : <number>, bytesTotal : <number> }
+jquery-yafu
 
-Sample code:
+~ Converts any valid element to an overlaid input form via an iFrame.
+~ Progress mechanism expects a JSON of the format: { bytesUploaded : <number>, bytesTotal : <number> }
+~ Please find the server side Java component in the "src" folder.
+~ For a live demo, please check the "demo/yafu-sample" application.
 
+Sample client side code:
+
+<code>
 $("#upload").yafu({
     upload : {
         control : {
@@ -22,13 +27,19 @@ $("#upload").yafu({
         progressBarId : "yafu_upload_progressbar",
         url : "uploadStatus",
         useKey : true,
-        onComplete : function(data) {
+        onProgress : function(data, textStatus, xhr) {
+        },
+        onComplete : function(data, textStatus, xhr) {
         }
     },
     cancel : {
         linkId : "yafu_cancel_upload",
         url : "cancelUpload",
-        onCancel : function(data) {
+        onBeforeCancel : function() {
+        },
+        onAfterCancel : function(data, textStatus, xhr) {
         }
     }
 });
+</code>
+

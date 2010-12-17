@@ -8,36 +8,40 @@
  * 
  * 
  * Sample code: <code>
-        $("#upload").yafu({
-            upload : {
-                control : {
-                    type : "link",
-                    id : "yafu_upload_link",
-                    name : "Upload"
-                },
-                divOverlayId : "yafu_div_overlay",
-                zIndexOverlay : "1100",
-                formId : "yafu_upload_form",
-                url : "fileUpload",
-                method : "post",
-                inputControlId : "file"
-            },
-            progress : {
-                labelId : "yafu_upload_label",
-                progressBarId : "yafu_upload_progressbar",
-                url : "uploadStatus",
-                useKey : true,
-                onComplete : function(data) {
-                }
-            },
-            cancel : {
-                linkId : "yafu_cancel_upload",
-                url : "cancelUpload",
-                onCancel : function(data) {
-                }
-            }
-        });
-  </code>
+$("#upload").yafu({
+    upload : {
+        control : {
+            type : "link",
+            id : "yafu_upload_link",
+            name : "Upload"
+        },
+        divOverlayId : "yafu_div_overlay",
+        zIndexOverlay : "1100",
+        formId : "yafu_upload_form",
+        url : "fileUpload",
+        method : "post",
+        inputControlId : "file"
+    },
+    progress : {
+        labelId : "yafu_upload_label",
+        progressBarId : "yafu_upload_progressbar",
+        url : "uploadStatus",
+        useKey : true,
+        onProgress : function(data, textStatus, xhr) {
+        },
+        onComplete : function(data, textStatus, xhr) {
+        }
+    },
+    cancel : {
+        linkId : "yafu_cancel_upload",
+        url : "cancelUpload",
+        onBeforeCancel : function() {
+        },
+        onAfterCancel : function(data, textStatus, xhr) {
+        }
+    }
+});
+</code>
  * 
  * @alias Dinesh Pillay < code [AT] dpillay [DOT] eml [DOT] cc >
  * @link https://github.com/dpillay/jquery-yafu
@@ -67,13 +71,17 @@
                 progressBarId : "yafu_upload_progressbar",
                 url : "uploadStatus",
                 useKey : true,
-                onComplete : function(data) {
+                onProgress : function(data, textStatus, xhr) {
+                },
+                onComplete : function(data, textStatus, xhr) {
                 }
             },
             cancel : {
                 linkId : "yafu_cancel_upload",
                 url : "cancelUpload",
-                onCancel : function(data) {
+                onBeforeCancel : function() {
+                },
+                onAfterCancel : function(data, textStatus, xhr) {
                 }
             }
         };
@@ -154,9 +162,9 @@
                 yafu_iframe.load(function() {
                 });
 
-                function yafuComplete() {
+                function yafuComplete(data, textStatus, xhr) {
                     $("#" + _options.upload.divOverlayId).remove();
-                    _options.progress.onComplete();
+                    _options.progress.onComplete(data, textStatus, xhr);
                 }
 
                 function yafuProgress() {
@@ -167,7 +175,7 @@
                             "key" : key.val()
                         };
                     }
-                    $.getJSON(progressUrl, keyParam, function(data) {
+                    $.getJSON(progressUrl, keyParam, function(data, textStatus, xhr) {
                         var percentage = Math.floor(100 * parseInt(data.bytesUploaded) / parseInt(data.bytesTotal));
                         label.html(input.val() + " - " + percentage + "%");
                         progress.progressbar({
@@ -175,18 +183,20 @@
                         });
                         if (!canceled) {
                             if (percentage != 100) {
+                                _options.progress.onProgress(data, textStatus, xhr);
                                 setTimeout(yafuProgress, 5);
                             } else {
                                 cancelLink.remove();
-                                yafuComplete();
+                                yafuComplete(data, textStatus, xhr);
                             }
                         } else {
                             var cancelUrl = _options.cancel.url;
                             cancelLink.remove();
                             progress.remove();
                             label.html(input.val() + " - Canceled");
-                            $.getJSON(cancelUrl, keyParam, function(data) {
-                                // Anything?
+                            _options.cancel.onBeforeCancel();
+                            $.getJSON(cancelUrl, keyParam, function(data, textStatus, xhr) {
+                                _options.cancel.onAfterCancel(data, textStatus, xhr);
                             });
                         }
                     });

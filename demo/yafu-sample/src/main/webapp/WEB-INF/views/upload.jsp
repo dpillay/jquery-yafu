@@ -76,13 +76,17 @@
                 progressBarId : "yafu_upload_progressbar",
                 url : "uploadStatus",
                 useKey : true,
-                onComplete : function(data) {
+                onProgress : function(data, textStatus, xhr) {
+                },
+                onComplete : function(data, textStatus, xhr) {
                 }
             },
             cancel : {
                 linkId : "yafu_cancel_upload",
                 url : "cancelUpload",
-                onCancel : function(data) {
+                onBeforeCancel : function() {
+                },
+                onAfterCancel : function(data, textStatus, xhr) {
                 }
             }
         });
