@@ -1,19 +1,82 @@
-Converts any valid element to an overlaid input form via an iFrame.
-Progress mechanism expects a JSON of the format: { bytesUploaded : <number>, bytesTotal : <number> }
+jquery-yafu
 
-Sample code:
-    $("#upload").yafu({
+~ Converts any valid element to an overlaid input form via an iFrame.
+~ Progress mechanism expects a JSON of the format: { bytesUploaded : <number>, bytesTotal : <number> }
+~ Please find the server side Java component in the "src" folder.
+~ For a live demo, please check the "demo/yafu-sample" application.
+
+To include jquery-yafu in the jsp, you'll need:
+
+<code>
+<link rel="stylesheet"
+        href="<c:url value="/styles/redmond/jquery-ui-1.8.6.custom.css" />"
+        type="text/css" media="screen, projection">
+
+<script type="text/javascript"
+        src="<c:url value="/scripts/jquery-1.4.3.min.js" /> "></script>
+
+<script type="text/javascript"
+        src="<c:url value="/scripts/jquery-ui-1.8.5.custom.min.js" /> "></script>
+
+<script type="text/javascript"
+        src="<c:url value="/scripts/json.min.js" /> "></script>
+
+<script type="text/javascript"
+        src="<c:url value="/scripts/jquery-yafu/jquery-custom-file-input.js" /> "></script>
+
+<script type="text/javascript"
+        src="<c:url value="/scripts/jquery-yafu/jquery.md5.js" /> "></script>
+
+<script type="text/javascript"
+	src="<c:url value="/scripts/jquery-yafu/jquery.yafu-1.0.0.js" /> "></script>
+</code>
+
+Of course the theme you use depends on you.
+
+Sample client side code:
+
+<code>
+$("#upload").yafu({
+    upload : {
         control : {
-            type : "link",
-            id : "upload_link",
-            name : "Import Data"
+            type : "link", // can also be "button"
+            id : "yafu_upload_link",
+            name : "Upload"
         },
-        formId : "upload_form",
-        uploadUrl : "fileUpload",
+        divOverlayId : "yafu_div_overlay",
+        zIndexOverlay : "1100",
+        formId : "yafu_upload_form",
+        url : "fileUpload",
         method : "post",
-        labelId : "upload_label",
-        fileInput : "file",
-        overlayId : "div_overlay",
-        progressUrl : "uploadStatus",
-        useKey : true
-    });
+        inputControlId : "file",
+        onSubmit : function(data) {
+            // data.fileName
+            // data.fileKey
+        }
+    },
+    progress : {
+        labelId : "yafu_upload_label",
+        progressBarId : "yafu_upload_progressbar",
+        url : "uploadStatus",
+        useKey : true,
+        onProgress : function(data, textStatus, xhr) {
+            // data.bytesUploaded
+            // data.bytesTotal
+        },
+        onComplete : function(data, textStatus, xhr) {
+            // data.bytesUploaded
+            // data.bytesTotal
+        }
+    },
+    cancel : {
+        linkId : "yafu_cancel_upload",
+        url : "cancelUpload",
+        onBeforeCancel : function() {
+        },
+        onAfterCancel : function(data, textStatus, xhr) {
+        }
+    },
+    onError : function() {
+    }
+});
+</code>

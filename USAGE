@@ -36,11 +36,10 @@ Of course the theme you use depends on you.
 Sample client side code:
 
 <code>
-
 $("#upload").yafu({
     upload : {
         control : {
-            type : "link",
+            type : "link", // can also be "button"
             id : "yafu_upload_link",
             name : "Upload"
         },
@@ -50,7 +49,9 @@ $("#upload").yafu({
         url : "fileUpload",
         method : "post",
         inputControlId : "file",
-        onSubmit : function() {
+        onSubmit : function(data) {
+            // data.fileName
+            // data.fileKey
         }
     },
     progress : {
@@ -59,8 +60,12 @@ $("#upload").yafu({
         url : "uploadStatus",
         useKey : true,
         onProgress : function(data, textStatus, xhr) {
+            // data.bytesUploaded
+            // data.bytesTotal
         },
         onComplete : function(data, textStatus, xhr) {
+            // data.bytesUploaded
+            // data.bytesTotal
         }
     },
     cancel : {
@@ -70,7 +75,8 @@ $("#upload").yafu({
         },
         onAfterCancel : function(data, textStatus, xhr) {
         }
+    },
+    onError : function() {
     }
 });
 </code>
-

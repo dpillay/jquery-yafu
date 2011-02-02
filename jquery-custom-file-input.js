@@ -1,8 +1,7 @@
 /**
- * Custom File Input Plugin
- * Plugin home: http://plugins.jquery.com/project/custom-file
- * Source: http://www.daimi.au.dk/~u061768/jquery-custom-file-input.js
- * Author: mafintosh
+ * Custom File Input Plugin Plugin home:
+ * http://plugins.jquery.com/project/custom-file Source:
+ * http://www.daimi.au.dk/~u061768/jquery-custom-file-input.js Author: mafintosh
  * LICENSE: Currently unknown but assuming GPL / MIT
  */
 
@@ -19,12 +18,14 @@ jQuery.fn.file = function() {
         var pos = btn.offset();
 
         function update() {
+            var width = parseNumber(btn.css("padding-left")) + btn.width() + parseNumber(btn.css("padding-right"));
+            var height = parseNumber(btn.css("padding-top")) + btn.height() + parseNumber(btn.css("padding-bottom"));
             pos = btn.offset();
             file.css({
                 'top' : pos.top,
                 'left' : pos.left,
-                'width' : btn.width(),
-                'height' : btn.height()
+                'width' : width,
+                'height' : height
             });
         }
 
@@ -89,3 +90,7 @@ jQuery.fn.file = function() {
         update();
     });
 };
+
+function parseNumber(str) {
+    return Number(str.substring(0, str.length - 2));
+}

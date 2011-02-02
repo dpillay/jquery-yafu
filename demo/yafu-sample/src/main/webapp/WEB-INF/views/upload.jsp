@@ -60,9 +60,9 @@
         $("#upload").yafu({
             upload : {
                 control : {
-                    type : "link",
+                    type : "button",
                     id : "yafu_upload_link",
-                    name : "Upload"
+                    name : "Import Data"
                 },
                 divOverlayId : "yafu_div_overlay",
                 zIndexOverlay : "1100",
@@ -70,7 +70,8 @@
                 url : "fileUpload",
                 method : "post",
                 inputControlId : "file",
-                onSubmit : function() {
+                onSubmit : function(data) {
+                    alert("File name: " + data.fileName + " & File Key: " + data.fileKey);
                 }
             },
             progress : {
@@ -90,6 +91,9 @@
                 },
                 onAfterCancel : function(data, textStatus, xhr) {
                 }
+            },
+            onError : function() {
+                alert("Houston, we have a problem!");
             }
         });
     });
