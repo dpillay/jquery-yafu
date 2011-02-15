@@ -28,7 +28,7 @@
 	type="text/css" media="screen, projection">
 
 <script type="text/javascript"
-	src="<c:url value="/scripts/jquery-1.4.3.min.js" /> "></script>
+	src="<c:url value="/scripts/jquery-1.4.4.js" /> "></script>
 
 <script type="text/javascript"
 	src="<c:url value="/scripts/jquery-ui-1.8.5.custom.min.js" /> "></script>
