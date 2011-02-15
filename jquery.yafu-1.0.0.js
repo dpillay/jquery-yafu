@@ -125,7 +125,7 @@ $("#upload").yafu({
                     var file_input = input;
                     file_input.attr("id", "file");
                     file_input.attr("name", "file");
-                    
+
                     var submitBtn = $('<input id="submit" name="submit" type=submit />');
                     var yafu_iframe = $('<iframe id="yafu_iframe" name="yafu_iframe"></iframe>');
                     var key = $('<input id="key" name="key" type=text />');
@@ -136,15 +136,11 @@ $("#upload").yafu({
                     yafu_iframe.attr("width", "1");
                     yafu_iframe.load(function() {
                     });
-                    
-                    var form = $('<form style="display: none;" id="' + _options.upload.formId + '" name="' + _options.upload.formId + '" action="' + _options.upload.url + '" method="' + _options.upload.method + '" target="' + 'yafu_iframe' + '" enctype="' + 'multipart/form-data' + '"></form>');
-                    // var form = $('<form></form>');
-                    // form.attr("id", _options.upload.formId);
-                    // form.attr("name", _options.upload.formId);
-                    // form.attr("action", _options.upload.url);
-                    // form.attr("method", _options.upload.method);
-                    // form.attr("target", "yafu_iframe");
-                    // form.attr("enctype", "multipart/form-data");
+
+                    var form = $('<form style="display: none;" id="' + _options.upload.formId + '" name="'
+                            + _options.upload.formId + '" action="' + _options.upload.url + '" method="'
+                            + _options.upload.method + '" target="' + 'yafu_iframe' + '" enctype="'
+                            + 'multipart/form-data' + '"></form>');
 
                     form.append(file_input);
                     form.append(key);
@@ -153,8 +149,8 @@ $("#upload").yafu({
                     parent.empty().append(yafu_iframe).append(form);
 
                     setTimeout(function() {
-                    	var keyValue = String(key.val());
-                    	var inputValue = String(input.val());
+                        var keyValue = String(key.val());
+                        var inputValue = String(input.val());
                         var canceled = false;
                         var label = $('<label></label>');
                         label.attr("id", _options.progress.labelId);
@@ -203,9 +199,13 @@ $("#upload").yafu({
                                 };
                             }
                             try {
-                            	$.ajaxSetup({ cache: false });
+                                $.ajaxSetup({
+                                    cache : false
+                                });
                                 $.getJSON(progressUrl, keyParam, function(data, textStatus, xhr) {
-                                	$.ajaxSetup({ cache: true });
+                                    $.ajaxSetup({
+                                        cache : true
+                                    });
                                     var percentage = Math.floor(100 * parseInt(data.bytesUploaded)
                                             / parseInt(data.bytesTotal));
                                     label.html(inputValue + " - " + percentage + "%");
