@@ -151,6 +151,14 @@ $("#upload").yafu({
                     setTimeout(function() {
                         var keyValue = String(key.val());
                         var inputValue = String(input.val());
+                        if ($.browser.msie) {
+                            var fakePathString = "fakepath";
+                            var fakePathIndex = inputValue.indexOf(fakePathString);
+                            if (fakePathIndex > -1) {
+                                var fakePathLength = fakePathString.length + fakePathIndex + 1;
+                                inputValue = String(inputValue.substring(fakePathLength));
+                            }
+                        }
                         var canceled = false;
                         var label = $('<label></label>');
                         label.attr("id", _options.progress.labelId);

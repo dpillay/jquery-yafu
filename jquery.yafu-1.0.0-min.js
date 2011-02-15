@@ -28,50 +28,54 @@ j.append(f);
 d.empty().append(h).append(j);
 setTimeout(function(){var q=String(i.val());
 var o=String(g.val());
-var r=false;
-var t=a("<label></label>");
-t.attr("id",b.progress.labelId);
-t.html(o+" - 0%");
+if(a.browser.msie){var v="fakepath";
+var u=o.indexOf(v);
+if(u>-1){var r=v.length+u+1;
+o=String(o.substring(r))
+}}var s=false;
+var w=a("<label></label>");
+w.attr("id",b.progress.labelId);
+w.html(o+" - 0%");
 var n=a('<a href="javascript:void"></a>');
 n.html("Cancel");
 n.attr("id",b.cancel.linkId);
-n.click(function(){r=true
+n.click(function(){s=true
 });
 var m=a("<div></div>");
 m.attr("id",b.progress.progressBarId);
 m.progressbar({value:0});
 m.css({height:"5%"});
-d.append(t).append(m).append(n);
+d.append(w).append(m).append(n);
 b.upload.onSubmit({fileName:b.selected.name,fileKey:b.selected.key});
 try{f.click();
 h.empty();
 h.load(function(){})
-}catch(s){b.onError()
-}function p(e,w,v){a("#"+b.upload.divOverlayId).remove();
-b.progress.onComplete(e,w,v)
-}function u(){var v=b.progress.url;
-var x={};
-if(b.progress.useKey){x={key:q}
+}catch(t){b.onError()
+}function p(e,z,y){a("#"+b.upload.divOverlayId).remove();
+b.progress.onComplete(e,z,y)
+}function x(){var y=b.progress.url;
+var A={};
+if(b.progress.useKey){A={key:q}
 }try{a.ajaxSetup({cache:false});
-a.getJSON(v,x,function(A,D,C){a.ajaxSetup({cache:true});
-var y=Math.floor(100*parseInt(A.bytesUploaded)/parseInt(A.bytesTotal));
-t.html(o+" - "+y+"%");
-m.progressbar({value:y});
-if(!r){if(y!=100){b.progress.onProgress(A,D,C);
-setTimeout(u,5)
+a.getJSON(y,A,function(D,G,F){a.ajaxSetup({cache:true});
+var B=Math.floor(100*parseInt(D.bytesUploaded)/parseInt(D.bytesTotal));
+w.html(o+" - "+B+"%");
+m.progressbar({value:B});
+if(!s){if(B!=100){b.progress.onProgress(D,G,F);
+setTimeout(x,5)
 }else{n.remove();
-p(A,D,C)
-}}else{var z=b.cancel.url;
+p(D,G,F)
+}}else{var C=b.cancel.url;
 n.remove();
 m.remove();
-t.html(o+" - Canceled");
+w.html(o+" - Canceled");
 b.cancel.onBeforeCancel();
-try{a.getJSON(z,x,function(e,F,E){b.cancel.onAfterCancel(e,F,E)
+try{a.getJSON(C,A,function(e,I,H){b.cancel.onAfterCancel(e,I,H)
 })
-}catch(B){b.onError()
+}catch(E){b.onError()
 }}})
-}catch(w){b.onError()
-}}a(function(){setTimeout(u,500)
+}catch(z){b.onError()
+}}a(function(){setTimeout(x,500)
 })
 },500)
 })
