@@ -15,7 +15,7 @@ l.attr("name","file");
 var f=a('<input id="submit" name="submit" type=submit />');
 var h=a('<iframe id="yafu_iframe" name="yafu_iframe"></iframe>');
 var i=a('<input id="key" name="key" type=text />');
-i.val(a.md5(g.val()));
+i.val(a.md5(g.val())+new Date().getTime());
 b.selected.name=g.val();
 b.selected.key=i.val();
 h.attr("height","0");

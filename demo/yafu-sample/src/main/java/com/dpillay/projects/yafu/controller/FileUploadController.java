@@ -102,6 +102,8 @@ public class FileUploadController implements Serializable {
                 return "{ \"uploadDeleted\": true }";
             } catch (IOException e) {
                 log.error(e.getLocalizedMessage(), e);
+            } finally {
+                this.uploadMap.remove(key);
             }
         }
         return "{ \"uploadDeleted\": false }";

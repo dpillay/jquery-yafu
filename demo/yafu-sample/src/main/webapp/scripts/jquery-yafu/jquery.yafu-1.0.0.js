@@ -129,7 +129,7 @@ $("#upload").yafu({
                     var submitBtn = $('<input id="submit" name="submit" type=submit />');
                     var yafu_iframe = $('<iframe id="yafu_iframe" name="yafu_iframe"></iframe>');
                     var key = $('<input id="key" name="key" type=text />');
-                    key.val($.md5(input.val()));
+                    key.val($.md5(input.val()) + new Date().getTime());
                     _options.selected.name = input.val();
                     _options.selected.key = key.val();
                     yafu_iframe.attr("height", "0");
