@@ -39,44 +39,91 @@ Sample client side code:
 $("#upload").yafu({
     upload : {
         control : {
-            type : "link", // can also be "button"
-            id : "yafu_upload_link",
-            name : "Upload"
+            type : "link", // The upload control can either be a 'link' or a 'button'
+            id : "yafu_upload_link", // Id for the upload control.
+            name : "Upload" // Name to be displayed on the upload control.
         },
-        divOverlayId : "yafu_div_overlay",
-        zIndexOverlay : "1100",
-        formId : "yafu_upload_form",
-        url : "fileUpload",
-        method : "post",
-        inputControlId : "file",
+        divOverlayId : "yafu_div_overlay", // overlay div id
+        zIndexOverlay : "1100", // z-index for the overlay div
+        formId : "yafu_upload_form", // form id
+        url : "fileUpload", // server url for upload the file.
+        method : "post", // server upload method.
+        inputControlId : "file", // Id for the <input type=file /> element
         onSubmit : function(data) {
-            // data.fileName
-            // data.fileKey
+             // Fired just before the 'url' is accessed & the file is uploaded.
         }
     },
     progress : {
-        labelId : "yafu_upload_label",
-        progressBarId : "yafu_upload_progressbar",
-        url : "uploadStatus",
-        useKey : true,
+        labelId : "yafu_upload_label", // Upload label id.
+        progressBarId : "yafu_upload_progressbar", // Id for the jquery ui progress bar component.
+        url : "uploadStatus", // server url for tracking upload status. A request param with the key will be sent.
+        useKey : true, // _Deprecated_
         onProgress : function(data, textStatus, xhr) {
-            // data.bytesUploaded
-            // data.bytesTotal
+            // Fired at regular intervals on each upload increment
         },
         onComplete : function(data, textStatus, xhr) {
-            // data.bytesUploaded
-            // data.bytesTotal
+            // Fired when the upload is completed.
         }
     },
     cancel : {
-        linkId : "yafu_cancel_upload",
-        url : "cancelUpload",
+        linkId : "yafu_cancel_upload", // The id for the 'Cancel' link
+        url : "cancelUpload", // server url for canceling the upload. A request param with the key will be sent.
         onBeforeCancel : function() {
+            // On clicking on 'Cancel' button, this is fired just before the url is accessed.
         },
         onAfterCancel : function(data, textStatus, xhr) {
+            // On clicking on 'Cancel' button, this is fired after server responds to the request for cancellation.
+        }
+        // Note: cancel & yafu("abort") are NOT the same thing and apply to different scenarios.
+        // yafu("abort") is an external event trying to cancel the upload.
+    },
+    error : {
+        onError : function() {
+           // Fired any time there's an error throughout the system.
         }
     },
-    onError : function() {
+    cleanup : {
+        autodelete : true, // If true, in the event of a cancellation or error, yafu will request the server to delete the file.
+        deleteUrl : "deleteUpload", // server url for deleting file. A request param with the key will be sent.
+        onBeforeDelete : function() {
+           // Fired before the 'deleteUrl' is accessed and the file is requested to be deleted.
+        },
+        onAfterDelete : function(data, textStatus, xhr) {
+           // Fired after the server responds to the request for deletion.
+        }
+    },
+    destroy : {
+        empty : true // If true, the container on which yafu is called will be emptied on "destroy"
     }
 });
 </code>
+
+Methods:
+1. yafu() or yafu(options)
+   Loads the file upload component with the overriden options or not. This sets up the forms and overlays needed for the upload.
+
+2. yafu("destroy")
+   - Upload in progress
+     a. yafu("abort") behaviour is followed.
+
+   - Upload not started
+     The file upload component will be unloaded & the container will be emptied (based on options.deleted.empty)
+   
+   jquery-yafu internally understands between the 2 cases, so you need to only call yafu("destroy") in either scenario.
+
+3. yafu("purge")
+   Will hit the options.cleanup.deleteUrl with the assigned key in turn request the server side to delete the file.
+   
+4. yafu("abort")
+   _Doesn't need to be called._
+   
+   If there's an active upload in progress then
+   a. based on options.cleanup.autodelete flag the file would be deleted
+   b. yafu("destroy") would be called
+   c. options.error.onError() would be called.
+   
+   Note: cancel & yafu("abort") are NOT the same thing and apply to different scenarios.
+         yafu("abort") is an external event trying to cancel the upload.
+
+5. yafu("isActive")
+   Tells you whether a upload is currently in progress.

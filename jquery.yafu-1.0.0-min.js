@@ -1,83 +1,127 @@
-(function(a){a.fn.yafu=function(){var d=a(this);
-var b={upload:{control:{type:"link",id:"yafu_upload_link",name:"Upload"},divOverlayId:"yafu_div_overlay",zIndexOverlay:"1100",formId:"yafu_upload_form",url:"fileUpload",method:"post",inputControlId:"file",onSubmit:function(e){}},progress:{labelId:"yafu_upload_label",progressBarId:"yafu_upload_progressbar",url:"uploadStatus",useKey:true,onProgress:function(e,g,f){},onComplete:function(e,g,f){}},cancel:{linkId:"yafu_cancel_upload",url:"cancelUpload",onBeforeCancel:function(){},onAfterCancel:function(e,g,f){}},onError:function(){},selected:{name:"",key:""}};
-b=a.extend(b,arguments[0]);
-var c=null;
-if(b.upload.control.type=="button"){c=a("<input type=button />");
-c.attr("value",b.upload.control.name);
-c.button()
-}else{c=a('<a href="javascript:void" />');
-c.text(b.upload.control.name)
-}c.attr("id",b.upload.control.id);
-a(this).append(c);
-c.file({zIndex:b.upload.zIndexOverlay,fileInput:b.upload.inputControlId,overlayId:b.upload.divOverlayId}).choose(function(k,g){var l=g;
-l.attr("id","file");
-l.attr("name","file");
-var f=a('<input id="submit" name="submit" type=submit />');
-var h=a('<iframe id="yafu_iframe" name="yafu_iframe"></iframe>');
-var i=a('<input id="key" name="key" type=text />');
-i.val(a.md5(g.val())+new Date().getTime());
-b.selected.name=g.val();
-b.selected.key=i.val();
-h.attr("height","0");
-h.attr("width","1");
-h.load(function(){});
-var j=a('<form style="display: none;" id="'+b.upload.formId+'" name="'+b.upload.formId+'" action="'+b.upload.url+'" method="'+b.upload.method+'" target="yafu_iframe" enctype="multipart/form-data"></form>');
-j.append(l);
-j.append(i);
-j.append(f);
-d.empty().append(h).append(j);
-setTimeout(function(){var q=String(i.val());
-var o=String(g.val());
-if(a.browser.msie){var v="fakepath";
-var u=o.indexOf(v);
-if(u>-1){var r=v.length+u+1;
-o=String(o.substring(r))
-}}var s=false;
-var w=a("<label></label>");
-w.attr("id",b.progress.labelId);
-w.html(o+" - 0%");
-var n=a('<a href="javascript:void"></a>');
-n.html("Cancel");
-n.attr("id",b.cancel.linkId);
-n.click(function(){s=true
+(function(c){var a={upload:{control:{type:"link",id:"yafu_upload_link",name:"Upload"},divOverlayId:"yafu_div_overlay",zIndexOverlay:"1100",formId:"yafu_upload_form",url:"fileUpload",method:"post",inputControlId:"file",onSubmit:function(d){}},progress:{labelId:"yafu_upload_label",progressBarId:"yafu_upload_progressbar",url:"uploadStatus",useKey:true,onProgress:function(d,f,e){},onComplete:function(d,f,e){}},cancel:{linkId:"yafu_cancel_upload",url:"cancelUpload",onBeforeCancel:function(){},onAfterCancel:function(d,f,e){}},error:{onError:function(){}},cleanup:{autodelete:true,deleteUrl:"deleteUpload",onBeforeDelete:function(){},onAfterDelete:function(d,f,e){}},destroy:{empty:true}};
+var b={init:function(d){var i=c(this),h=i.data("yafu");
+if(!h){var g={selected:{name:"",key:""},keyValue:"",inputValue:"",interrupted:false,in_progess:false};
+c(this).data("yafu",g);
+var f=c(this);
+a=c.extend(a,d);
+var e=null;
+if(a.upload.control.type=="button"){e=c("<input type=button />");
+e.attr("value",a.upload.control.name);
+e.button()
+}else{e=c('<a href="javascript:void" />');
+e.text(a.upload.control.name)
+}e.attr("id",a.upload.control.id);
+c(this).append(e);
+e.file({zIndex:a.upload.zIndexOverlay,fileInput:a.upload.inputControlId,overlayId:a.upload.divOverlayId}).choose(function(o,k){g.in_progess=true;
+var p=k;
+p.attr("id","file");
+p.attr("name","file");
+var j=c('<input id="submit" name="submit" type=submit />');
+var l=c('<iframe id="yafu_iframe" name="yafu_iframe"></iframe>');
+var m=c('<input id="key" name="key" type=text />');
+m.val(c.md5(k.val())+new Date().getTime());
+g.selected.name=k.val();
+g.selected.key=m.val();
+l.attr("height","0");
+l.attr("width","1");
+l.load(function(){});
+var n=c('<form style="display: none;" id="'+a.upload.formId+'" name="'+a.upload.formId+'" action="'+a.upload.url+'" method="'+a.upload.method+'" target="yafu_iframe" enctype="multipart/form-data"></form>');
+n.append(p);
+n.append(m);
+n.append(j);
+f.empty().append(l).append(n);
+setTimeout(function(){if(g.interrupted){return w(null)
+}g.keyValue=String(m.val());
+g.inputValue=String(k.val());
+if(c.browser.msie){var y="\\";
+var x=g.inputValue.lastIndexOf(y);
+if(x>-1){var t=x+1;
+g.inputValue=String(g.inputValue.substring(t))
+}}var u=false;
+var z=c("<label></label>");
+z.attr("id",a.progress.labelId);
+z.html(g.inputValue+" - 0%");
+var r=c('<a href="javascript:void"></a>');
+r.html("Cancel");
+r.attr("id",a.cancel.linkId);
+r.click(function(){u=true
 });
-var m=a("<div></div>");
-m.attr("id",b.progress.progressBarId);
-m.progressbar({value:0});
-m.css({height:"5%"});
-d.append(w).append(m).append(n);
-b.upload.onSubmit({fileName:b.selected.name,fileKey:b.selected.key});
-try{f.click();
-h.empty();
-h.load(function(){})
-}catch(t){b.onError()
-}function p(e,z,y){a("#"+b.upload.divOverlayId).remove();
-b.progress.onComplete(e,z,y)
-}function x(){var y=b.progress.url;
-var A={};
-if(b.progress.useKey){A={key:q}
-}try{a.ajaxSetup({cache:false});
-a.getJSON(y,A,function(D,G,F){a.ajaxSetup({cache:true});
-var B=Math.floor(100*parseInt(D.bytesUploaded)/parseInt(D.bytesTotal));
-w.html(o+" - "+B+"%");
-m.progressbar({value:B});
-if(!s){if(B!=100){b.progress.onProgress(D,G,F);
-setTimeout(x,5)
-}else{n.remove();
-p(D,G,F)
-}}else{var C=b.cancel.url;
-n.remove();
-m.remove();
-w.html(o+" - Canceled");
-b.cancel.onBeforeCancel();
-try{a.getJSON(C,A,function(e,I,H){b.cancel.onAfterCancel(e,I,H)
-})
-}catch(E){b.onError()
+var q=c("<div></div>");
+q.attr("id",a.progress.progressBarId);
+q.progressbar({value:0});
+q.css({height:"5%"});
+f.append(z).append(q).append(r);
+a.upload.onSubmit({fileName:g.selected.name,fileKey:g.selected.key});
+function w(B){if(g.in_progess&&a.cleanup.autodelete){f.yafu("purge")
+}g.in_progess=false;
+f.yafu("destroy");
+a.error.onError();
+return f
+}try{j.click();
+l.empty();
+l.load(function(){})
+}catch(v){return w(v)
+}function s(B,D,C){g.in_progess=false;
+f.yafu("destroy");
+a.progress.onComplete(B,D,C);
+return f
+}function A(){if(g.interrupted){return w(null)
+}var B=a.progress.url;
+var D={};
+if(a.progress.useKey){D={key:g.keyValue}
+}try{c.ajaxSetup({cache:false});
+c.getJSON(B,D,function(G,J,I){c.ajaxSetup({cache:true});
+var E=Math.floor(100*parseInt(G.bytesUploaded)/parseInt(G.bytesTotal));
+if(G.bytesTotal==-1){z.html(g.inputValue+" - <i>Initializing<i>")
+}else{z.html(g.inputValue+" - "+E+"%")
+}q.progressbar({value:E});
+if(!u){if(E!=100){a.progress.onProgress(G,J,I);
+setTimeout(A,500)
+}else{r.remove();
+return s(G,J,I)
+}}else{var F=a.cancel.url;
+r.remove();
+q.remove();
+z.html(g.inputValue+" - Canceled");
+g.in_progess=false;
+g.interrupted=true;
+a.cancel.onBeforeCancel();
+try{c.getJSON(F,D,function(K,M,L){a.cancel.onAfterCancel(K,M,L);
+if(a.cleanup.autodelete){f.yafu("purge")
+}})
+}catch(H){return w(H)
 }}})
-}catch(z){b.onError()
-}}a(function(){setTimeout(x,500)
-})
+}catch(C){return w(C)
+}return f
+}c(function(){setTimeout(A,500)
+});
+return f
 },500)
 })
-}
+}return this
+},purge:function(){var d=this.data("yafu");
+if(d){a.cleanup.onBeforeDelete();
+try{var g={};
+if(a.progress.useKey){g={key:d.keyValue}
+}c.getJSON(a.cleanup.deleteUrl,g,function(e,i,h){a.cleanup.onAfterDelete(e,i,h)
+})
+}catch(f){console.log("Could not delete file for key: "+d.keyValue)
+}}return this
+},destroy:function(){var d=this.data("yafu");
+if(d){if(d.in_progess){this.yafu("abort")
+}else{c("#"+a.upload.divOverlayId).remove();
+this.removeData("yafu");
+if(a.destroy.empty){this.empty()
+}}}return this
+},abort:function(){var d=this.data("yafu");
+if(d){d.interrupted=true
+}return this
+},isActive:function(){var d=this.data("yafu");
+if(d){return d.in_progess
+}else{return false
+}}};
+c.fn.yafu=function(d){if(b[d]){return b[d].apply(this,Array.prototype.slice.call(arguments,1))
+}else{if(typeof d==="object"||!d){return b.init.apply(this,arguments)
+}else{c.error("Method "+d+" does not exist on jQuery.yafu")
+}}}
 })(jQuery);

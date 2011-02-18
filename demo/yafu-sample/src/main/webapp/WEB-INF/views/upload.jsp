@@ -50,51 +50,78 @@
 <body>
 <div class="container">
 <h1>Upload a file</h1>
-<div id="upload"></div>
+<table>
+	<tr>
+		<td><input id="btnYafu" type="button"></input></td>
+	</tr>
+	<tr>
+		<td>
+		<div id="upload"></div>
+		</td>
+	</tr>
+	<tr>
+		<td>
+		<div id="yafuCancel"></div>
+		</td>
+	</tr>
+</table>
 </div>
 </body>
 
 <script type="text/javascript">
     $(document).ready(function() {
-        $("#upload").empty();
-        $("#upload").yafu({
-            upload : {
-                control : {
-                    type : "button",
-                    id : "yafu_upload_link",
-                    name : "Import Data"
+        $("#btnYafu").button().val("Click to Import").click(function() {
+            var btnYafuCancel = $('<input></input>').attr("id", "btnYafuCancel");
+            btnYafuCancel.button().val("Cancel Import").click(function() {
+                $("#upload").yafu("destroy");
+                $(this).remove();
+            });
+            $("#yafuCancel").append(btnYafuCancel);
+
+            $("#upload").yafu({
+                upload : {
+                    control : {
+                        type : "button",
+                        id : "yafu_upload_link",
+                        name : "Import Data"
+                    },
+                    divOverlayId : "yafu_div_overlay",
+                    zIndexOverlay : "1100",
+                    formId : "yafu_upload_form",
+                    url : "fileUpload",
+                    method : "post",
+                    inputControlId : "file",
+                    onSubmit : function(data) {
+                        alert("File name: " + data.fileName + " & File Key: " + data.fileKey);
+                    }
                 },
-                divOverlayId : "yafu_div_overlay",
-                zIndexOverlay : "1100",
-                formId : "yafu_upload_form",
-                url : "fileUpload",
-                method : "post",
-                inputControlId : "file",
-                onSubmit : function(data) {
-                    alert("File name: " + data.fileName + " & File Key: " + data.fileKey);
-                }
-            },
-            progress : {
-                labelId : "yafu_upload_label",
-                progressBarId : "yafu_upload_progressbar",
-                url : "uploadStatus",
-                useKey : true,
-                onProgress : function(data, textStatus, xhr) {
+                progress : {
+                    labelId : "yafu_upload_label",
+                    progressBarId : "yafu_upload_progressbar",
+                    url : "uploadStatus",
+                    useKey : true,
+                    onProgress : function(data, textStatus, xhr) {
+                    },
+                    onComplete : function(data, textStatus, xhr) {
+                        btnYafuCancel.click();
+                    }
                 },
-                onComplete : function(data, textStatus, xhr) {
-                }
-            },
-            cancel : {
-                linkId : "yafu_cancel_upload",
-                url : "cancelUpload",
-                onBeforeCancel : function() {
+                cancel : {
+                    linkId : "yafu_cancel_upload",
+                    url : "cancelUpload",
+                    onBeforeCancel : function() {
+                    },
+                    onAfterCancel : function(data, textStatus, xhr) {
+                        btnYafuCancel.click();
+                    }
                 },
-                onAfterCancel : function(data, textStatus, xhr) {
+                onError : function() {
+                    alert("Houston, we have a problem!");
+                },
+                destroy : {
+                    empty : true
                 }
-            },
-            onError : function() {
-                alert("Houston, we have a problem!");
-            }
+            });
         });
     });
 </script>
