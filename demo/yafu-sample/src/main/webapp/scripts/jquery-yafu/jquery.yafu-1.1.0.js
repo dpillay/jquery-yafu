@@ -1,11 +1,13 @@
 /**
  * jquery-yafu v1.1.0
  * 
+ * @alias Dinesh Pillay < code [AT] dpillay [DOT] eml [DOT] cc >
+ * @link https://github.com/dpillay/jquery-yafu
+ * @license MIT License
+ * 
  * Converts any valid element to an overlaid input form via an iFrame. Progress
  * mechanism expects a JSON of the format: { bytesUploaded : <number>,
  * bytesTotal : <number> }
- * 
- * 
  * 
  * Sample code: <code>
 $("#upload").yafu({
@@ -70,11 +72,6 @@ $("#upload").yafu({
     }
 });
 </code>
- * 
- * @alias Dinesh Pillay < code [AT] dpillay [DOT] eml [DOT] cc >
- * @link https://github.com/dpillay/jquery-yafu
- * @license MIT License
- * 
  */
 
 (function($) {
@@ -144,7 +141,11 @@ $("#upload").yafu({
                     keyValue : "",
                     inputValue : "",
                     interrupted : false,
-                    in_progess : false
+                    progress : {
+                        in_progess : false,
+                        bytesUploaded : 0,
+                        bytesTotal : -1
+                    }
                 };
                 $(this).data('yafu', _data);
                 var parent = $(this);
@@ -168,7 +169,7 @@ $("#upload").yafu({
                     hiddenDivId : _options.upload.hiddenDivId
                 }).choose(
                         function(e, input) {
-                            _data.in_progess = true;
+                            _data.progress.in_progess = true;
                             var file_input = input;
                             file_input.attr("id", "file");
                             file_input.attr("name", "file");
@@ -235,7 +236,7 @@ $("#upload").yafu({
                                 });
 
                                 function yafuError(e) {
-                                    _data.in_progess = false;
+                                    _data.progress.in_progess = false;
                                     if (_options.cleanup.autodelete) {
                                         parent.yafu("purge");
                                     }
@@ -254,7 +255,7 @@ $("#upload").yafu({
                                 }
 
                                 function yafuComplete(data, textStatus, xhr) {
-                                    _data.in_progess = false;
+                                    _data.progress.in_progess = false;
                                     parent.yafu("destroy");
                                     _options.progress.onComplete(data, textStatus, xhr);
                                     return parent;
@@ -279,6 +280,8 @@ $("#upload").yafu({
                                             $.ajaxSetup({
                                                 cache : true
                                             });
+                                            _data.progress.bytesUploaded = data.bytesUploaded;
+                                            _data.progress.bytesTotal = data.bytesTotal;
                                             var percentage = Math.floor(100 * parseInt(data.bytesUploaded)
                                                     / parseInt(data.bytesTotal));
                                             if (data.bytesTotal != -1) {
@@ -301,7 +304,7 @@ $("#upload").yafu({
                                                 cancelLink.remove();
                                                 progress.remove();
                                                 label.html(_data.inputValue + " - Canceled");
-                                                _data.in_progess = false;
+                                                _data.progress.in_progess = false;
                                                 _data.interrupted = true;
                                                 _options.cancel.onBeforeCancel();
                                                 try {
@@ -330,6 +333,10 @@ $("#upload").yafu({
             }
             return this;
         },
+        enabled : function() {
+            var _data = this.data('yafu');
+            return (_data) ? true : false;
+        },
         data : function(key) {
             var _data = this.data('yafu');
             if (_data) {
@@ -340,7 +347,7 @@ $("#upload").yafu({
         purge : function() {
             var _data = this.data('yafu');
             if (_data) {
-                if (_data.in_progess) {
+                if (_data.progress.in_progess) {
                     throw '[yafu] File Upload in progress, please "abort" or "destroy"';
                 } else {
                     _options.cleanup.onBeforeDelete();
@@ -364,7 +371,7 @@ $("#upload").yafu({
         destroy : function() {
             var _data = this.data('yafu');
             if (_data) {
-                if (_data.in_progess) {
+                if (_data.progress.in_progess) {
                     this.yafu("abort");
                 } else {
                     $("#" + _options.upload.divOverlayId).remove();
@@ -384,12 +391,12 @@ $("#upload").yafu({
             }
             return this;
         },
-        isActive : function() {
+        progress : function() {
             var _data = this.data('yafu');
             if (_data) {
-                return _data.in_progess;
+                return _data.progress;
             } else {
-                return false;
+                return null;
             }
         }
     };

@@ -128,5 +128,8 @@ Methods:
    Note: cancel & yafu("abort") are NOT the same thing and apply to different scenarios.
          yafu("abort") is an external event trying to cancel the upload.
 
-5. yafu("isActive")
-   Tells you whether a upload is currently in progress.
+5. yafu("progress")
+   Returns an object of the form { progress : false, bytesUploaded : <number>, bytesTotal : <number> }
+
+6. yafu("enabled")
+   Tells you whether yafu is enabled on the callee element.

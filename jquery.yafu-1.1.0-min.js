@@ -1,12 +1,13 @@
 /**
  * jquery-yafu v1.1.0
+ * 
  * @alias Dinesh Pillay < code [AT] dpillay [DOT] eml [DOT] cc >
  * @link https://github.com/dpillay/jquery-yafu
  * @license MIT License
  */
 (function(c){var a={upload:{control:{type:"link",id:"yafu_upload_link",name:"Upload"},divOverlayId:"yafu_div_overlay",zIndexOverlay:"1100",hiddenDivId:"yafu_div_hidden",formId:"yafu_upload_form",url:"fileUpload",method:"post",inputControlId:"file",onSubmit:function(d){}},progress:{labelId:"yafu_upload_label",progressBarId:"yafu_upload_progressbar",url:"uploadStatus",useKey:true,onProgress:function(d,f,e){},onComplete:function(d,f,e){}},cancel:{linkId:"yafu_cancel_upload",url:"cancelUpload",onBeforeCancel:function(){},onAfterCancel:function(d,f,e){}},error:{onError:function(){}},cleanup:{autodelete:true,deleteUrl:"deleteUpload",onBeforeDelete:function(){},onAfterDelete:function(d,f,e){}},destroy:{empty:true}};
 var b={init:function(d){var i=c(this),h=i.data("yafu");
-if(!h){var g={selected:{name:"",key:""},keyValue:"",inputValue:"",interrupted:false,in_progess:false};
+if(!h){var g={selected:{name:"",key:""},keyValue:"",inputValue:"",interrupted:false,progress:{in_progess:false,bytesUploaded:0,bytesTotal:-1}};
 c(this).data("yafu",g);
 var f=c(this);
 c.extend(true,a,d);
@@ -18,7 +19,7 @@ e.button()
 e.text(a.upload.control.name)
 }e.attr("id",a.upload.control.id);
 c(this).append(e);
-e.file({zIndex:a.upload.zIndexOverlay,fileInput:a.upload.inputControlId,overlayId:a.upload.divOverlayId,hiddenDivId:a.upload.hiddenDivId}).choose(function(o,k){g.in_progess=true;
+e.file({zIndex:a.upload.zIndexOverlay,fileInput:a.upload.inputControlId,overlayId:a.upload.divOverlayId,hiddenDivId:a.upload.hiddenDivId}).choose(function(o,k){g.progress.in_progess=true;
 var p=k;
 p.attr("id","file");
 p.attr("name","file");
@@ -60,7 +61,7 @@ c("#"+a.upload.divOverlayId).remove();
 c("#"+a.upload.hiddenDivId).remove();
 f.append(z).append(q).append(r);
 a.upload.onSubmit({fileName:g.selected.name,fileKey:g.selected.key});
-function w(B){g.in_progess=false;
+function w(B){g.progress.in_progess=false;
 if(a.cleanup.autodelete){f.yafu("purge")
 }f.yafu("destroy");
 a.error.onError();
@@ -69,7 +70,7 @@ return f
 l.empty();
 l.load(function(){})
 }catch(v){return w(v)
-}function s(B,D,C){g.in_progess=false;
+}function s(B,D,C){g.progress.in_progess=false;
 f.yafu("destroy");
 a.progress.onComplete(B,D,C);
 return f
@@ -79,6 +80,8 @@ var D={};
 if(a.progress.useKey){D={key:g.keyValue}
 }try{c.ajaxSetup({cache:false});
 c.getJSON(B,D,function(G,J,I){c.ajaxSetup({cache:true});
+g.progress.bytesUploaded=G.bytesUploaded;
+g.progress.bytesTotal=G.bytesTotal;
 var E=Math.floor(100*parseInt(G.bytesUploaded)/parseInt(G.bytesTotal));
 if(G.bytesTotal!=-1){z.html(g.inputValue+" - "+E+"%")
 }q.progressbar({value:E});
@@ -91,7 +94,7 @@ return s(G,J,I)
 r.remove();
 q.remove();
 z.html(g.inputValue+" - Canceled");
-g.in_progess=false;
+g.progress.in_progess=false;
 g.interrupted=true;
 a.cancel.onBeforeCancel();
 try{c.getJSON(F,D,function(K,M,L){a.cancel.onAfterCancel(K,M,L);
@@ -107,11 +110,13 @@ return f
 },500)
 })
 }return this
+},enabled:function(){var d=this.data("yafu");
+return(d)?true:false
 },data:function(d){var e=this.data("yafu");
 if(e){return e[d]
 }return this
 },purge:function(){var d=this.data("yafu");
-if(d){if(d.in_progess){throw'[yafu] File Upload in progress, please "abort" or "destroy"'
+if(d){if(d.progress.in_progess){throw'[yafu] File Upload in progress, please "abort" or "destroy"'
 }else{a.cleanup.onBeforeDelete();
 try{var g={};
 if(a.progress.useKey){g={key:d.keyValue}
@@ -120,7 +125,7 @@ if(a.progress.useKey){g={key:d.keyValue}
 }catch(f){console.log("Could not delete file for key: "+d.keyValue)
 }}}return this
 },destroy:function(){var d=this.data("yafu");
-if(d){if(d.in_progess){this.yafu("abort")
+if(d){if(d.progress.in_progess){this.yafu("abort")
 }else{c("#"+a.upload.divOverlayId).remove();
 c("#"+a.upload.hiddenDivId).remove();
 this.removeData("yafu");
@@ -129,9 +134,9 @@ if(a.destroy.empty){this.empty()
 },abort:function(){var d=this.data("yafu");
 if(d){d.interrupted=true
 }return this
-},isActive:function(){var d=this.data("yafu");
-if(d){return d.in_progess
-}else{return false
+},progress:function(){var d=this.data("yafu");
+if(d){return d.progress
+}else{return null
 }}};
 c.fn.yafu=function(d){if(b[d]){return b[d].apply(this,Array.prototype.slice.call(arguments,1))
 }else{if(typeof d==="object"||!d){return b.init.apply(this,arguments)
