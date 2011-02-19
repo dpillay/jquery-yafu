@@ -201,13 +201,11 @@ $("#upload").yafu({
                                 }
                                 _data.keyValue = String(key.val());
                                 _data.inputValue = String(input.val());
-                                if ($.browser.msie) {
-                                    var fakePathString = "\\";
-                                    var fakePathIndex = _data.inputValue.lastIndexOf(fakePathString);
-                                    if (fakePathIndex > -1) {
-                                        var fakePathLength = fakePathIndex + 1;
-                                        _data.inputValue = String(_data.inputValue.substring(fakePathLength));
-                                    }
+                                var fakePathString = "\\";
+                                var fakePathIndex = _data.inputValue.lastIndexOf(fakePathString);
+                                if (fakePathIndex > -1) {
+                                    var fakePathLength = fakePathIndex + 1;
+                                    _data.inputValue = String(_data.inputValue.substring(fakePathLength));
                                 }
                                 var canceled = false;
                                 var label = $('<label></label>');
@@ -237,10 +235,10 @@ $("#upload").yafu({
                                 });
 
                                 function yafuError(e) {
-                                    if (_data.in_progess && _options.cleanup.autodelete) {
+                                    _data.in_progess = false;
+                                    if (_options.cleanup.autodelete) {
                                         parent.yafu("purge");
                                     }
-                                    _data.in_progess = false;
                                     parent.yafu("destroy");
                                     _options.error.onError();
                                     return parent;
@@ -342,19 +340,23 @@ $("#upload").yafu({
         purge : function() {
             var _data = this.data('yafu');
             if (_data) {
-                _options.cleanup.onBeforeDelete();
-                try {
-                    var keyParam = {};
-                    if (_options.progress.useKey) {
-                        keyParam = {
-                            "key" : _data.keyValue
-                        };
+                if (_data.in_progess) {
+                    throw '[yafu] File Upload in progress, please "abort" or "destroy"';
+                } else {
+                    _options.cleanup.onBeforeDelete();
+                    try {
+                        var keyParam = {};
+                        if (_options.progress.useKey) {
+                            keyParam = {
+                                "key" : _data.keyValue
+                            };
+                        }
+                        $.getJSON(_options.cleanup.deleteUrl, keyParam, function(data, textStatus, xhr) {
+                            _options.cleanup.onAfterDelete(data, textStatus, xhr);
+                        });
+                    } catch (e) {
+                        console.log("Could not delete file for key: " + _data.keyValue);
                     }
-                    $.getJSON(_options.cleanup.deleteUrl, keyParam, function(data, textStatus, xhr) {
-                        _options.cleanup.onAfterDelete(data, textStatus, xhr);
-                    });
-                } catch (e) {
-                    console.log("Could not delete file for key: " + _data.keyValue);
                 }
             }
             return this;

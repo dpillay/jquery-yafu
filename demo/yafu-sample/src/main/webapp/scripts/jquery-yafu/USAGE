@@ -115,6 +115,7 @@ Methods:
 
 3. yafu("purge")
    Will hit the options.cleanup.deleteUrl with the assigned key in turn request the server side to delete the file.
+   Throws an excpetion if file upload is in progress. Please use "abort" or "destroy" for such cases.
    
 4. yafu("abort")
    _Doesn't need to be called._

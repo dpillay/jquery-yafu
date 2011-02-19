@@ -1,14 +1,3 @@
-/**
- * jquery-yafu v1.1.0
- *
- * Converts any valid element to an overlaid input form via an iFrame. Progress
- * mechanism expects a JSON of the format: { bytesUploaded : <number>,
- * bytesTotal : <number> }
- *
- * @alias Dinesh Pillay < code [AT] dpillay [DOT] eml [DOT] cc >
- * @link https://github.com/dpillay/jquery-yafu
- * @license MIT License
- */
 (function(c){var a={upload:{control:{type:"link",id:"yafu_upload_link",name:"Upload"},divOverlayId:"yafu_div_overlay",zIndexOverlay:"1100",hiddenDivId:"yafu_div_hidden",formId:"yafu_upload_form",url:"fileUpload",method:"post",inputControlId:"file",onSubmit:function(d){}},progress:{labelId:"yafu_upload_label",progressBarId:"yafu_upload_progressbar",url:"uploadStatus",useKey:true,onProgress:function(d,f,e){},onComplete:function(d,f,e){}},cancel:{linkId:"yafu_cancel_upload",url:"cancelUpload",onBeforeCancel:function(){},onAfterCancel:function(d,f,e){}},error:{onError:function(){}},cleanup:{autodelete:true,deleteUrl:"deleteUpload",onBeforeDelete:function(){},onAfterDelete:function(d,f,e){}},destroy:{empty:true}};
 var b={init:function(d){var i=c(this),h=i.data("yafu");
 if(!h){var g={selected:{name:"",key:""},keyValue:"",inputValue:"",interrupted:false,in_progess:false};
@@ -44,11 +33,11 @@ f.empty().append(l).append(n);
 setTimeout(function(){if(g.interrupted){return w(null)
 }g.keyValue=String(m.val());
 g.inputValue=String(k.val());
-if(c.browser.msie){var y="\\";
+var y="\\";
 var x=g.inputValue.lastIndexOf(y);
 if(x>-1){var t=x+1;
 g.inputValue=String(g.inputValue.substring(t))
-}}var u=false;
+}var u=false;
 var z=c("<label></label>");
 z.attr("id",a.progress.labelId);
 z.html(g.inputValue+" - <i>Initializing<i>");
@@ -65,9 +54,9 @@ c("#"+a.upload.divOverlayId).remove();
 c("#"+a.upload.hiddenDivId).remove();
 f.append(z).append(q).append(r);
 a.upload.onSubmit({fileName:g.selected.name,fileKey:g.selected.key});
-function w(B){if(g.in_progess&&a.cleanup.autodelete){f.yafu("purge")
-}g.in_progess=false;
-f.yafu("destroy");
+function w(B){g.in_progess=false;
+if(a.cleanup.autodelete){f.yafu("purge")
+}f.yafu("destroy");
 a.error.onError();
 return f
 }try{j.click();
@@ -116,13 +105,14 @@ return f
 if(e){return e[d]
 }return this
 },purge:function(){var d=this.data("yafu");
-if(d){a.cleanup.onBeforeDelete();
+if(d){if(d.in_progess){throw'[yafu] File Upload in progress, please "abort" or "destroy"'
+}else{a.cleanup.onBeforeDelete();
 try{var g={};
 if(a.progress.useKey){g={key:d.keyValue}
 }c.getJSON(a.cleanup.deleteUrl,g,function(e,i,h){a.cleanup.onAfterDelete(e,i,h)
 })
 }catch(f){console.log("Could not delete file for key: "+d.keyValue)
-}}return this
+}}}return this
 },destroy:function(){var d=this.data("yafu");
 if(d){if(d.in_progess){this.yafu("abort")
 }else{c("#"+a.upload.divOverlayId).remove();
