@@ -43,7 +43,7 @@
 	src="<c:url value="/scripts/jquery-yafu/jquery.md5.js" /> "></script>
 
 <script type="text/javascript"
-	src="<c:url value="/scripts/jquery-yafu/jquery.yafu-1.0.0.js" /> "></script>
+	src="<c:url value="/scripts/jquery-yafu/jquery.yafu-1.1.0.js" /> "></script>
 
 </head>
 
@@ -64,6 +64,11 @@
 		<div id="yafuCancel"></div>
 		</td>
 	</tr>
+	<tr>
+		<td>
+		<div id="yafuData"></div>
+		</td>
+	</tr>
 </table>
 </div>
 </body>
@@ -71,9 +76,15 @@
 <script type="text/javascript">
     $(document).ready(function() {
         $("#btnYafu").button().val("Click to Import").click(function() {
+            var btnYafuData = $('<input></input>').attr("id", "btnYafuData");
+            btnYafuData.button().val("Get Key").click(function() {
+                alert($("#upload").yafu("data", "keyValue"));
+            });
+            $("#yafuData").append(btnYafuData);
             var btnYafuCancel = $('<input></input>').attr("id", "btnYafuCancel");
             btnYafuCancel.button().val("Cancel Import").click(function() {
                 $("#upload").yafu("destroy");
+                btnYafuData.remove();
                 $(this).remove();
             });
             $("#yafuCancel").append(btnYafuCancel);

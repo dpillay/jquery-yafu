@@ -1,5 +1,5 @@
 /**
- * jquery-yafu
+ * jquery-yafu v1.1.0
  * 
  * Converts any valid element to an overlaid input form via an iFrame. Progress
  * mechanism expects a JSON of the format: { bytesUploaded : <number>,
@@ -17,6 +17,7 @@ $("#upload").yafu({
         },
         divOverlayId : "yafu_div_overlay", // overlay div id
         zIndexOverlay : "1100", // z-index for the overlay div
+        hiddenDivId : "yafu_div_hidden", // hidden div id for yafu
         formId : "yafu_upload_form", // form id
         url : "fileUpload", // server url for upload the file.
         method : "post", // server upload method.
@@ -86,6 +87,7 @@ $("#upload").yafu({
             },
             divOverlayId : "yafu_div_overlay",
             zIndexOverlay : "1100",
+            hiddenDivId : "yafu_div_hidden",
             formId : "yafu_upload_form",
             url : "fileUpload",
             method : "post",
@@ -146,7 +148,7 @@ $("#upload").yafu({
                 };
                 $(this).data('yafu', _data);
                 var parent = $(this);
-                _options = $.extend(_options, options);
+                $.extend(true, _options, options);
                 var btn = null;
                 if (_options.upload.control.type == "button") {
                     btn = $('<input type=button />');
@@ -162,7 +164,8 @@ $("#upload").yafu({
                 btn.file({
                     zIndex : _options.upload.zIndexOverlay,
                     fileInput : _options.upload.inputControlId,
-                    overlayId : _options.upload.divOverlayId
+                    overlayId : _options.upload.divOverlayId,
+                    hiddenDivId : _options.upload.hiddenDivId
                 }).choose(
                         function(e, input) {
                             _data.in_progess = true;
@@ -209,7 +212,7 @@ $("#upload").yafu({
                                 var canceled = false;
                                 var label = $('<label></label>');
                                 label.attr("id", _options.progress.labelId);
-                                label.html(_data.inputValue + " - 0%");
+                                label.html(_data.inputValue + " - <i>Initializing<i>");
                                 var cancelLink = $('<a href="javascript:void"></a>');
                                 cancelLink.html("Cancel");
                                 cancelLink.attr("id", _options.cancel.linkId);
@@ -224,6 +227,8 @@ $("#upload").yafu({
                                 progress.css({
                                     height : "5%"
                                 });
+                                $("#" + _options.upload.divOverlayId).remove();
+                                $("#" + _options.upload.hiddenDivId).remove();
                                 parent.append(label).append(progress).append(cancelLink);
 
                                 _options.upload.onSubmit({
@@ -278,9 +283,7 @@ $("#upload").yafu({
                                             });
                                             var percentage = Math.floor(100 * parseInt(data.bytesUploaded)
                                                     / parseInt(data.bytesTotal));
-                                            if (data.bytesTotal == -1) {
-                                                label.html(_data.inputValue + " - <i>Initializing<i>");
-                                            } else {
+                                            if (data.bytesTotal != -1) {
                                                 label.html(_data.inputValue + " - " + percentage + "%");
                                             }
                                             progress.progressbar({
@@ -292,6 +295,7 @@ $("#upload").yafu({
                                                     setTimeout(yafuProgress, 500);
                                                 } else {
                                                     cancelLink.remove();
+                                                    progress.remove();
                                                     return yafuComplete(data, textStatus, xhr);
                                                 }
                                             } else {
@@ -328,6 +332,13 @@ $("#upload").yafu({
             }
             return this;
         },
+        data : function(key) {
+            var _data = this.data('yafu');
+            if (_data) {
+                return _data[key];
+            }
+            return this;
+        },
         purge : function() {
             var _data = this.data('yafu');
             if (_data) {
@@ -355,6 +366,7 @@ $("#upload").yafu({
                     this.yafu("abort");
                 } else {
                     $("#" + _options.upload.divOverlayId).remove();
+                    $("#" + _options.upload.hiddenDivId).remove();
                     this.removeData('yafu');
                     if (_options.destroy.empty) {
                         this.empty();

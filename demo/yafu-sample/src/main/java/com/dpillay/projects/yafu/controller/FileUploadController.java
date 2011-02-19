@@ -1,5 +1,12 @@
+/**
+ * jquery-yafu v1.1.0
+ * @author Dinesh Pillay < code [AT] dpillay [DOT] eml [DOT] cc >
+ * @link https://github.com/dpillay/jquery-yafu
+ * @license MIT License
+ */
 package com.dpillay.projects.yafu.controller;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.Map;
@@ -27,9 +34,23 @@ import com.dpillay.projects.yafu.upload.UploadResource;
 @Scope(value = WebApplicationContext.SCOPE_SESSION)
 public class FileUploadController implements Serializable {
     private static final long serialVersionUID = 1392639196671015775L;
-    private static final String BASE_DIR = "C:/Users/dpillay/tmp/yafu";
+    private static final String BASE_DIR = "/tmp/yafu";
     private static Logger log = LoggerFactory.getLogger(FileUploadController.class);
     private volatile transient Map<String, UploadResource> uploadMap = new ConcurrentHashMap<String, UploadResource>();
+
+    static {
+        File directory = new File(BASE_DIR);
+        if (!directory.exists()) {
+            log.error("Creating Yafu tmp directory: {}", BASE_DIR);
+            directory.mkdirs();
+        } else if (directory.isFile()) {
+            log.error("Yafu tmp directory is a file: {}", BASE_DIR);
+            throw new RuntimeException("Yafu tmp directory is a file: " + BASE_DIR);
+        } else if (directory.isDirectory() && !(directory.canExecute() && directory.canWrite())) {
+            log.error("Can't write in Yafu tmp directory: {}", BASE_DIR);
+            throw new RuntimeException("Can't write in Yafu tmp directory: " + BASE_DIR);
+        }
+    }
 
     public FileUploadController() {
         log.info("file upload created");

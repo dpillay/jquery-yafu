@@ -1,9 +1,20 @@
-(function(c){var a={upload:{control:{type:"link",id:"yafu_upload_link",name:"Upload"},divOverlayId:"yafu_div_overlay",zIndexOverlay:"1100",formId:"yafu_upload_form",url:"fileUpload",method:"post",inputControlId:"file",onSubmit:function(d){}},progress:{labelId:"yafu_upload_label",progressBarId:"yafu_upload_progressbar",url:"uploadStatus",useKey:true,onProgress:function(d,f,e){},onComplete:function(d,f,e){}},cancel:{linkId:"yafu_cancel_upload",url:"cancelUpload",onBeforeCancel:function(){},onAfterCancel:function(d,f,e){}},error:{onError:function(){}},cleanup:{autodelete:true,deleteUrl:"deleteUpload",onBeforeDelete:function(){},onAfterDelete:function(d,f,e){}},destroy:{empty:true}};
+/**
+ * jquery-yafu v1.1.0
+ *
+ * Converts any valid element to an overlaid input form via an iFrame. Progress
+ * mechanism expects a JSON of the format: { bytesUploaded : <number>,
+ * bytesTotal : <number> }
+ *
+ * @alias Dinesh Pillay < code [AT] dpillay [DOT] eml [DOT] cc >
+ * @link https://github.com/dpillay/jquery-yafu
+ * @license MIT License
+ */
+(function(c){var a={upload:{control:{type:"link",id:"yafu_upload_link",name:"Upload"},divOverlayId:"yafu_div_overlay",zIndexOverlay:"1100",hiddenDivId:"yafu_div_hidden",formId:"yafu_upload_form",url:"fileUpload",method:"post",inputControlId:"file",onSubmit:function(d){}},progress:{labelId:"yafu_upload_label",progressBarId:"yafu_upload_progressbar",url:"uploadStatus",useKey:true,onProgress:function(d,f,e){},onComplete:function(d,f,e){}},cancel:{linkId:"yafu_cancel_upload",url:"cancelUpload",onBeforeCancel:function(){},onAfterCancel:function(d,f,e){}},error:{onError:function(){}},cleanup:{autodelete:true,deleteUrl:"deleteUpload",onBeforeDelete:function(){},onAfterDelete:function(d,f,e){}},destroy:{empty:true}};
 var b={init:function(d){var i=c(this),h=i.data("yafu");
 if(!h){var g={selected:{name:"",key:""},keyValue:"",inputValue:"",interrupted:false,in_progess:false};
 c(this).data("yafu",g);
 var f=c(this);
-a=c.extend(a,d);
+c.extend(true,a,d);
 var e=null;
 if(a.upload.control.type=="button"){e=c("<input type=button />");
 e.attr("value",a.upload.control.name);
@@ -12,7 +23,7 @@ e.button()
 e.text(a.upload.control.name)
 }e.attr("id",a.upload.control.id);
 c(this).append(e);
-e.file({zIndex:a.upload.zIndexOverlay,fileInput:a.upload.inputControlId,overlayId:a.upload.divOverlayId}).choose(function(o,k){g.in_progess=true;
+e.file({zIndex:a.upload.zIndexOverlay,fileInput:a.upload.inputControlId,overlayId:a.upload.divOverlayId,hiddenDivId:a.upload.hiddenDivId}).choose(function(o,k){g.in_progess=true;
 var p=k;
 p.attr("id","file");
 p.attr("name","file");
@@ -40,7 +51,7 @@ g.inputValue=String(g.inputValue.substring(t))
 }}var u=false;
 var z=c("<label></label>");
 z.attr("id",a.progress.labelId);
-z.html(g.inputValue+" - 0%");
+z.html(g.inputValue+" - <i>Initializing<i>");
 var r=c('<a href="javascript:void"></a>');
 r.html("Cancel");
 r.attr("id",a.cancel.linkId);
@@ -50,6 +61,8 @@ var q=c("<div></div>");
 q.attr("id",a.progress.progressBarId);
 q.progressbar({value:0});
 q.css({height:"5%"});
+c("#"+a.upload.divOverlayId).remove();
+c("#"+a.upload.hiddenDivId).remove();
 f.append(z).append(q).append(r);
 a.upload.onSubmit({fileName:g.selected.name,fileKey:g.selected.key});
 function w(B){if(g.in_progess&&a.cleanup.autodelete){f.yafu("purge")
@@ -72,12 +85,12 @@ if(a.progress.useKey){D={key:g.keyValue}
 }try{c.ajaxSetup({cache:false});
 c.getJSON(B,D,function(G,J,I){c.ajaxSetup({cache:true});
 var E=Math.floor(100*parseInt(G.bytesUploaded)/parseInt(G.bytesTotal));
-if(G.bytesTotal==-1){z.html(g.inputValue+" - <i>Initializing<i>")
-}else{z.html(g.inputValue+" - "+E+"%")
+if(G.bytesTotal!=-1){z.html(g.inputValue+" - "+E+"%")
 }q.progressbar({value:E});
 if(!u){if(E!=100){a.progress.onProgress(G,J,I);
 setTimeout(A,500)
 }else{r.remove();
+q.remove();
 return s(G,J,I)
 }}else{var F=a.cancel.url;
 r.remove();
@@ -99,6 +112,9 @@ return f
 },500)
 })
 }return this
+},data:function(d){var e=this.data("yafu");
+if(e){return e[d]
+}return this
 },purge:function(){var d=this.data("yafu");
 if(d){a.cleanup.onBeforeDelete();
 try{var g={};
@@ -110,6 +126,7 @@ if(a.progress.useKey){g={key:d.keyValue}
 },destroy:function(){var d=this.data("yafu");
 if(d){if(d.in_progess){this.yafu("abort")
 }else{c("#"+a.upload.divOverlayId).remove();
+c("#"+a.upload.hiddenDivId).remove();
 this.removeData("yafu");
 if(a.destroy.empty){this.empty()
 }}}return this

@@ -13,6 +13,8 @@ jQuery.fn.file = function() {
     var zIndex = arguments[0].zIndex;
     var fileInput = arguments[0].fileInput;
     var overlayId = arguments[0].overlayId;
+    var hiddenDivId = arguments[0].hiddenDivId;
+
     return this.each(function() {
         var btn = $(this);
         var pos = btn.offset();
@@ -31,7 +33,7 @@ jQuery.fn.file = function() {
 
         btn.mouseover(update);
 
-        var hidden = $('<div></div>').css({
+        var hidden = $('<div></div>').attr("id", hiddenDivId).css({
             'display' : 'none'
         }).appendTo('body');
 

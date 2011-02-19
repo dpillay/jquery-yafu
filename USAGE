@@ -1,4 +1,5 @@
 jquery-yafu
+v1.1.0
 
 ~ Converts any valid element to an overlaid input form via an iFrame.
 ~ Progress mechanism expects a JSON of the format: { bytesUploaded : <number>, bytesTotal : <number> }
@@ -45,6 +46,7 @@ $("#upload").yafu({
         },
         divOverlayId : "yafu_div_overlay", // overlay div id
         zIndexOverlay : "1100", // z-index for the overlay div
+        hiddenDivId : "yafu_div_hidden", // hidden div id for yafu
         formId : "yafu_upload_form", // form id
         url : "fileUpload", // server url for upload the file.
         method : "post", // server upload method.
