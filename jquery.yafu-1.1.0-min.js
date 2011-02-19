@@ -1,3 +1,9 @@
+/**
+ * jquery-yafu v1.1.0
+ * @alias Dinesh Pillay < code [AT] dpillay [DOT] eml [DOT] cc >
+ * @link https://github.com/dpillay/jquery-yafu
+ * @license MIT License
+ */
 (function(c){var a={upload:{control:{type:"link",id:"yafu_upload_link",name:"Upload"},divOverlayId:"yafu_div_overlay",zIndexOverlay:"1100",hiddenDivId:"yafu_div_hidden",formId:"yafu_upload_form",url:"fileUpload",method:"post",inputControlId:"file",onSubmit:function(d){}},progress:{labelId:"yafu_upload_label",progressBarId:"yafu_upload_progressbar",url:"uploadStatus",useKey:true,onProgress:function(d,f,e){},onComplete:function(d,f,e){}},cancel:{linkId:"yafu_cancel_upload",url:"cancelUpload",onBeforeCancel:function(){},onAfterCancel:function(d,f,e){}},error:{onError:function(){}},cleanup:{autodelete:true,deleteUrl:"deleteUpload",onBeforeDelete:function(){},onAfterDelete:function(d,f,e){}},destroy:{empty:true}};
 var b={init:function(d){var i=c(this),h=i.data("yafu");
 if(!h){var g={selected:{name:"",key:""},keyValue:"",inputValue:"",interrupted:false,in_progess:false};
