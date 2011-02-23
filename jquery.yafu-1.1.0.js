@@ -142,7 +142,7 @@ $("#upload").yafu({
                     inputValue : "",
                     interrupted : false,
                     progress : {
-                        in_progess : false,
+                        in_progress : false,
                         bytesUploaded : 0,
                         bytesTotal : -1
                     }
@@ -169,7 +169,7 @@ $("#upload").yafu({
                     hiddenDivId : _options.upload.hiddenDivId
                 }).choose(
                         function(e, input) {
-                            _data.progress.in_progess = true;
+                            _data.progress.in_progress = true;
                             var file_input = input;
                             file_input.attr("id", "file");
                             file_input.attr("name", "file");
@@ -236,7 +236,7 @@ $("#upload").yafu({
                                 });
 
                                 function yafuError(e) {
-                                    _data.progress.in_progess = false;
+                                    _data.progress.in_progress = false;
                                     if (_options.cleanup.autodelete) {
                                         parent.yafu("purge");
                                     }
@@ -255,7 +255,7 @@ $("#upload").yafu({
                                 }
 
                                 function yafuComplete(data, textStatus, xhr) {
-                                    _data.progress.in_progess = false;
+                                    _data.progress.in_progress = false;
                                     parent.yafu("destroy");
                                     _options.progress.onComplete(data, textStatus, xhr);
                                     return parent;
@@ -304,7 +304,7 @@ $("#upload").yafu({
                                                 cancelLink.remove();
                                                 progress.remove();
                                                 label.html(_data.inputValue + " - Canceled");
-                                                _data.progress.in_progess = false;
+                                                _data.progress.in_progress = false;
                                                 _data.interrupted = true;
                                                 _options.cancel.onBeforeCancel();
                                                 try {
@@ -347,7 +347,7 @@ $("#upload").yafu({
         purge : function() {
             var _data = this.data('yafu');
             if (_data) {
-                if (_data.progress.in_progess) {
+                if (_data.progress.in_progress) {
                     throw '[yafu] File Upload in progress, please "abort" or "destroy"';
                 } else {
                     _options.cleanup.onBeforeDelete();
@@ -371,7 +371,7 @@ $("#upload").yafu({
         destroy : function() {
             var _data = this.data('yafu');
             if (_data) {
-                if (_data.progress.in_progess) {
+                if (_data.progress.in_progress) {
                     this.yafu("abort");
                 } else {
                     $("#" + _options.upload.divOverlayId).remove();
