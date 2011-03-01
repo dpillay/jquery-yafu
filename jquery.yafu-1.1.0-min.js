@@ -1,11 +1,4 @@
-/**
- * jquery-yafu v1.1.0
- * 
- * @alias Dinesh Pillay < code [AT] dpillay [DOT] eml [DOT] cc >
- * @link https://github.com/dpillay/jquery-yafu
- * @license MIT License
- */
-(function(c){var a={upload:{control:{type:"link",id:"yafu_upload_link",name:"Upload"},divOverlayId:"yafu_div_overlay",zIndexOverlay:"1100",hiddenDivId:"yafu_div_hidden",formId:"yafu_upload_form",url:"fileUpload",method:"post",inputControlId:"file",onSubmit:function(d){}},progress:{labelId:"yafu_upload_label",progressBarId:"yafu_upload_progressbar",url:"uploadStatus",useKey:true,onProgress:function(d,f,e){},onComplete:function(d,f,e){}},cancel:{linkId:"yafu_cancel_upload",url:"cancelUpload",onBeforeCancel:function(){},onAfterCancel:function(d,f,e){}},error:{onError:function(){}},cleanup:{autodelete:true,deleteUrl:"deleteUpload",onBeforeDelete:function(){},onAfterDelete:function(d,f,e){}},destroy:{empty:true}};
+(function(c){var a={upload:{control:{type:"link",id:"yafu_upload_link",name:"Upload"},divOverlayId:"yafu_div_overlay",zIndexOverlay:"1100",hiddenDivId:"yafu_div_hidden",formId:"yafu_upload_form",url:"fileUpload",method:"post",inputControlId:"file",onSubmit:function(d){}},progress:{labelId:"yafu_upload_label",progressBarId:"yafu_upload_progressbar",url:"uploadStatus",useKey:true,progressInterval:250,onProgress:function(d,f,e){},onComplete:function(d,f,e){}},cancel:{linkId:"yafu_cancel_upload",url:"cancelUpload",onBeforeCancel:function(){},onAfterCancel:function(d,f,e){}},error:{onError:function(){}},cleanup:{autodelete:true,deleteUrl:"deleteUpload",onBeforeDelete:function(){},onAfterDelete:function(d,f,e){}},destroy:{empty:true}};
 var b={init:function(d){var i=c(this),h=i.data("yafu");
 if(!h){var g={selected:{name:"",key:""},keyValue:"",inputValue:"",interrupted:false,progress:{in_progress:false,bytesUploaded:0,bytesTotal:-1}};
 c(this).data("yafu",g);
@@ -76,17 +69,14 @@ a.progress.onComplete(B,D,C);
 return f
 }function A(){if(g.interrupted){return w(null)
 }var B=a.progress.url;
-var D={};
-if(a.progress.useKey){D={key:g.keyValue}
-}try{c.ajaxSetup({cache:false});
-c.getJSON(B,D,function(G,J,I){c.ajaxSetup({cache:true});
-g.progress.bytesUploaded=G.bytesUploaded;
+var D={key:g.keyValue,nocache:new Date().getTime()};
+try{c.getJSON(B,D,function(G,J,I){g.progress.bytesUploaded=G.bytesUploaded;
 g.progress.bytesTotal=G.bytesTotal;
 var E=Math.floor(100*parseInt(G.bytesUploaded)/parseInt(G.bytesTotal));
 if(G.bytesTotal!=-1){z.html(g.inputValue+" - "+E+"%")
 }q.progressbar({value:E});
 if(!u){if(E!=100){a.progress.onProgress(G,J,I);
-setTimeout(A,500)
+setTimeout(A,a.progress.progressInterval)
 }else{r.remove();
 q.remove();
 return s(G,J,I)
@@ -118,9 +108,8 @@ if(e){return e[d]
 },purge:function(){var d=this.data("yafu");
 if(d){if(d.progress.in_progress){throw'[yafu] File Upload in progress, please "abort" or "destroy"'
 }else{a.cleanup.onBeforeDelete();
-try{var g={};
-if(a.progress.useKey){g={key:d.keyValue}
-}c.getJSON(a.cleanup.deleteUrl,g,function(e,i,h){a.cleanup.onAfterDelete(e,i,h)
+try{var g={key:d.keyValue,nocache:new Date().getTime()};
+c.getJSON(a.cleanup.deleteUrl,g,function(e,i,h){a.cleanup.onAfterDelete(e,i,h)
 })
 }catch(f){console.log("Could not delete file for key: "+d.keyValue)
 }}}return this

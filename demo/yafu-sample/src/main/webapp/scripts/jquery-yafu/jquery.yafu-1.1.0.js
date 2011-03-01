@@ -33,6 +33,7 @@ $("#upload").yafu({
         progressBarId : "yafu_upload_progressbar", // Id for the jquery ui progress bar component.
         url : "uploadStatus", // server url for tracking upload status. A request param with the key will be sent.
         useKey : true, // _Deprecated_
+        progressInterval : 250, // Interval for making progress
         onProgress : function(data, textStatus, xhr) {
             // Fired at regular intervals on each upload increment
         },
@@ -97,6 +98,7 @@ $("#upload").yafu({
             progressBarId : "yafu_upload_progressbar",
             url : "uploadStatus",
             useKey : true,
+            progressInterval : 250,
             onProgress : function(data, textStatus, xhr) {
             },
             onComplete : function(data, textStatus, xhr) {
@@ -266,20 +268,12 @@ $("#upload").yafu({
                                         return yafuError(null);
                                     }
                                     var progressUrl = _options.progress.url;
-                                    var keyParam = {};
-                                    if (_options.progress.useKey) {
-                                        keyParam = {
-                                            "key" : _data.keyValue
-                                        };
-                                    }
+                                    var keyParam = {
+                                        "key" : _data.keyValue,
+                                        "nocache" : new Date().getTime()
+                                    };
                                     try {
-                                        $.ajaxSetup({
-                                            cache : false
-                                        });
                                         $.getJSON(progressUrl, keyParam, function(data, textStatus, xhr) {
-                                            $.ajaxSetup({
-                                                cache : true
-                                            });
                                             _data.progress.bytesUploaded = data.bytesUploaded;
                                             _data.progress.bytesTotal = data.bytesTotal;
                                             var percentage = Math.floor(100 * parseInt(data.bytesUploaded)
@@ -293,7 +287,7 @@ $("#upload").yafu({
                                             if (!canceled) {
                                                 if (percentage != 100) {
                                                     _options.progress.onProgress(data, textStatus, xhr);
-                                                    setTimeout(yafuProgress, 500);
+                                                    setTimeout(yafuProgress, _options.progress.progressInterval);
                                                 } else {
                                                     cancelLink.remove();
                                                     progress.remove();
@@ -352,12 +346,10 @@ $("#upload").yafu({
                 } else {
                     _options.cleanup.onBeforeDelete();
                     try {
-                        var keyParam = {};
-                        if (_options.progress.useKey) {
-                            keyParam = {
-                                "key" : _data.keyValue
-                            };
-                        }
+                        var keyParam = {
+                            "key" : _data.keyValue,
+                            "nocache" : new Date().getTime()
+                        };
                         $.getJSON(_options.cleanup.deleteUrl, keyParam, function(data, textStatus, xhr) {
                             _options.cleanup.onAfterDelete(data, textStatus, xhr);
                         });

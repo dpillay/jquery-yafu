@@ -111,6 +111,7 @@
                     progressBarId : "yafu_upload_progressbar",
                     url : "uploadStatus",
                     useKey : true,
+                    progressInterval : 100,
                     onProgress : function(data, textStatus, xhr) {
                     },
                     onComplete : function(data, textStatus, xhr) {
