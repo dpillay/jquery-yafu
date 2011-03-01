@@ -15,7 +15,8 @@ $("#upload").yafu({
         control : {
             type : "link", // The upload control can either be a 'link' or a 'button'
             id : "yafu_upload_link", // Id for the upload control.
-            name : "Upload" // Name to be displayed on the upload control.
+            name : "Upload", // Name to be displayed on the upload control.
+            tabIndex : "1" // TabIndex that's to be assigned for the control
         },
         divOverlayId : "yafu_div_overlay", // overlay div id
         zIndexOverlay : "1100", // z-index for the overlay div
@@ -81,7 +82,8 @@ $("#upload").yafu({
             control : {
                 type : "link",
                 id : "yafu_upload_link",
-                name : "Upload"
+                name : "Upload",
+                tabIndex : "1"
             },
             divOverlayId : "yafu_div_overlay",
             zIndexOverlay : "1100",
@@ -162,13 +164,18 @@ $("#upload").yafu({
                     btn.text(_options.upload.control.name);
                 }
                 btn.attr("id", _options.upload.control.id);
+                btn.attr("tabindex", "0");
+                btn.focus(function() {
+                    btn.blur();
+                });
                 $(this).append(btn);
 
                 btn.file({
                     zIndex : _options.upload.zIndexOverlay,
                     fileInput : _options.upload.inputControlId,
                     overlayId : _options.upload.divOverlayId,
-                    hiddenDivId : _options.upload.hiddenDivId
+                    hiddenDivId : _options.upload.hiddenDivId,
+                    tabIndex : _options.upload.control.tabIndex
                 }).choose(
                         function(e, input) {
                             _data.progress.in_progress = true;

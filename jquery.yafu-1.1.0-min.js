@@ -1,4 +1,4 @@
-(function(c){var a={upload:{control:{type:"link",id:"yafu_upload_link",name:"Upload"},divOverlayId:"yafu_div_overlay",zIndexOverlay:"1100",hiddenDivId:"yafu_div_hidden",formId:"yafu_upload_form",url:"fileUpload",method:"post",inputControlId:"file",onSubmit:function(d){}},progress:{labelId:"yafu_upload_label",progressBarId:"yafu_upload_progressbar",url:"uploadStatus",useKey:true,progressInterval:250,onProgress:function(d,f,e){},onComplete:function(d,f,e){}},cancel:{linkId:"yafu_cancel_upload",url:"cancelUpload",onBeforeCancel:function(){},onAfterCancel:function(d,f,e){}},error:{onError:function(){}},cleanup:{autodelete:true,deleteUrl:"deleteUpload",onBeforeDelete:function(){},onAfterDelete:function(d,f,e){}},destroy:{empty:true}};
+(function(c){var a={upload:{control:{type:"link",id:"yafu_upload_link",name:"Upload",tabIndex:"1"},divOverlayId:"yafu_div_overlay",zIndexOverlay:"1100",hiddenDivId:"yafu_div_hidden",formId:"yafu_upload_form",url:"fileUpload",method:"post",inputControlId:"file",onSubmit:function(d){}},progress:{labelId:"yafu_upload_label",progressBarId:"yafu_upload_progressbar",url:"uploadStatus",useKey:true,progressInterval:250,onProgress:function(d,f,e){},onComplete:function(d,f,e){}},cancel:{linkId:"yafu_cancel_upload",url:"cancelUpload",onBeforeCancel:function(){},onAfterCancel:function(d,f,e){}},error:{onError:function(){}},cleanup:{autodelete:true,deleteUrl:"deleteUpload",onBeforeDelete:function(){},onAfterDelete:function(d,f,e){}},destroy:{empty:true}};
 var b={init:function(d){var i=c(this),h=i.data("yafu");
 if(!h){var g={selected:{name:"",key:""},keyValue:"",inputValue:"",interrupted:false,progress:{in_progress:false,bytesUploaded:0,bytesTotal:-1}};
 c(this).data("yafu",g);
@@ -11,8 +11,11 @@ e.button()
 }else{e=c('<a href="javascript:void" />');
 e.text(a.upload.control.name)
 }e.attr("id",a.upload.control.id);
+e.attr("tabindex","0");
+e.focus(function(){e.blur()
+});
 c(this).append(e);
-e.file({zIndex:a.upload.zIndexOverlay,fileInput:a.upload.inputControlId,overlayId:a.upload.divOverlayId,hiddenDivId:a.upload.hiddenDivId}).choose(function(o,k){g.progress.in_progress=true;
+e.file({zIndex:a.upload.zIndexOverlay,fileInput:a.upload.inputControlId,overlayId:a.upload.divOverlayId,hiddenDivId:a.upload.hiddenDivId,tabIndex:a.upload.control.tabIndex}).choose(function(o,k){g.progress.in_progress=true;
 var p=k;
 p.attr("id","file");
 p.attr("name","file");

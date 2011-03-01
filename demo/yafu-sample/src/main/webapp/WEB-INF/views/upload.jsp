@@ -52,7 +52,7 @@
 <h1>Upload a file</h1>
 <table>
 	<tr>
-		<td><input id="btnYafu" type="button"></input></td>
+		<td><input id="btnYafu" type="button" tabindex="1"></input></td>
 	</tr>
 	<tr>
 		<td>
@@ -76,12 +76,12 @@
 <script type="text/javascript">
     $(document).ready(function() {
         $("#btnYafu").button().val("Click to Import").click(function() {
-            var btnYafuData = $('<input></input>').attr("id", "btnYafuData");
+            var btnYafuData = $('<input></input>').attr("id", "btnYafuData").attr("tabindex", "4");
             btnYafuData.button().val("Get Key").click(function() {
                 alert($("#upload").yafu("data", "keyValue"));
             });
             $("#yafuData").append(btnYafuData);
-            var btnYafuCancel = $('<input></input>').attr("id", "btnYafuCancel");
+            var btnYafuCancel = $('<input></input>').attr("id", "btnYafuCancel").attr("tabindex", "3");
             btnYafuCancel.button().val("Cancel Import").click(function() {
                 $("#upload").yafu("destroy");
                 btnYafuData.remove();
@@ -94,7 +94,8 @@
                     control : {
                         type : "button",
                         id : "yafu_upload_link",
-                        name : "Import Data"
+                        name : "Import Data",
+                        tabIndex : "2"
                     },
                     divOverlayId : "yafu_div_overlay",
                     zIndexOverlay : "1100",

@@ -14,6 +14,7 @@ jQuery.fn.file = function() {
     var fileInput = arguments[0].fileInput;
     var overlayId = arguments[0].overlayId;
     var hiddenDivId = arguments[0].hiddenDivId;
+    var tabIndex = arguments[0].tabIndex;
 
     return this.each(function() {
         var btn = $(this);
@@ -43,6 +44,7 @@ jQuery.fn.file = function() {
             '-moz-opacity' : '0',
             'filter' : 'alpha(opacity: 0)',
             'opacity' : '0',
+            'cursor' : 'pointer',
             'z-index' : zIndex
         });
         file.attr("id", overlayId);
@@ -54,6 +56,13 @@ jQuery.fn.file = function() {
             var input = $('<input type="file" multiple>').appendTo(form);
             input.attr("id", fileInput);
             input.attr("name", fileInput);
+            input.attr("tabindex", tabIndex);
+            input.focus(function() {
+                btn.trigger("mouseover");
+            });
+            input.blur(function() {
+                btn.trigger("mouseout");
+            });
             input.change(function(e) {
                 input.unbind();
                 input.detach();
@@ -61,13 +70,16 @@ jQuery.fn.file = function() {
                 reset();
             });
         }
-        ;
 
         reset();
 
         function placer(e) {
-            form.css('margin-left', e.pageX - pos.left - offset.width);
-            form.css('margin-top', e.pageY - pos.top - offset.height + 3);
+            var mleft = e.pageX - pos.left - offset.width;
+            var mtop = e.pageY - pos.top - offset.height + 3;
+            form.css({
+                'margin-left' : mleft,
+                'margin-top' : mtop
+            });
         }
 
         function redirect(name) {
