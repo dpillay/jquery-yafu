@@ -17,6 +17,10 @@ var i=$("<div><form></form></div>").appendTo("body").css({position:"absolute",ov
 i.attr("id",c);
 var g=i.find("form");
 var p=g.find("input");
+h.attr("tabindex","0");
+h.focus(function(){h.blur();
+p.focus()
+});
 function n(){var q=$('<input type="file" multiple>').appendTo(g);
 q.attr("id",d);
 q.attr("name",d);
@@ -32,7 +36,7 @@ n()
 })
 }n();
 function f(s){var r=s.pageX-o.left-j.width;
-var q=s.pageY-o.top-j.height+3;
+var q=s.pageY-o.top-j.height;
 g.css({"margin-left":r,"margin-top":q})
 }function m(q){i[q](function(r){h.trigger(q)
 })
@@ -42,7 +46,7 @@ m("mouseover");
 m("mouseout");
 m("mousedown");
 m("mouseup");
-var j={width:i.width()-25,height:i.height()/2};
+var j={width:i.width()-50,height:i.height()/2};
 k()
 })
 };

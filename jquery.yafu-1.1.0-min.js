@@ -11,9 +11,6 @@ e.button()
 }else{e=c('<a href="javascript:void" />');
 e.text(a.upload.control.name)
 }e.attr("id",a.upload.control.id);
-e.attr("tabindex","0");
-e.focus(function(){e.blur()
-});
 c(this).append(e);
 e.file({zIndex:a.upload.zIndexOverlay,fileInput:a.upload.inputControlId,overlayId:a.upload.divOverlayId,hiddenDivId:a.upload.hiddenDivId,tabIndex:a.upload.control.tabIndex}).choose(function(o,k){g.progress.in_progress=true;
 var p=k;

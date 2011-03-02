@@ -51,6 +51,11 @@ jQuery.fn.file = function() {
 
         var form = file.find('form');
         var input = form.find('input');
+        btn.attr("tabindex", "0");
+        btn.focus(function() {
+            btn.blur();
+            input.focus();
+        });
 
         function reset() {
             var input = $('<input type="file" multiple>').appendTo(form);
@@ -75,7 +80,7 @@ jQuery.fn.file = function() {
 
         function placer(e) {
             var mleft = e.pageX - pos.left - offset.width;
-            var mtop = e.pageY - pos.top - offset.height + 3;
+            var mtop = e.pageY - pos.top - offset.height;
             form.css({
                 'margin-left' : mleft,
                 'margin-top' : mtop
@@ -97,7 +102,7 @@ jQuery.fn.file = function() {
         redirect('mouseup');
 
         var offset = {
-            width : file.width() - 25,
+            width : file.width() - 50,
             height : file.height() / 2
         };
 

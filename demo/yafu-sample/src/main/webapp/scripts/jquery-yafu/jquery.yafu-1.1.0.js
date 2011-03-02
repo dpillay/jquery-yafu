@@ -164,10 +164,6 @@ $("#upload").yafu({
                     btn.text(_options.upload.control.name);
                 }
                 btn.attr("id", _options.upload.control.id);
-                btn.attr("tabindex", "0");
-                btn.focus(function() {
-                    btn.blur();
-                });
                 $(this).append(btn);
 
                 btn.file({
