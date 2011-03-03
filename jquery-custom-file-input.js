@@ -22,13 +22,14 @@ jQuery.fn.file = function() {
         var width = parseNumber(btn.css("padding-left")) + btn.width() + parseNumber(btn.css("padding-right"));
         var height = parseNumber(btn.css("padding-top")) + btn.height() + parseNumber(btn.css("padding-bottom"));
 
+        // The 2px is needed to ensure the click on the borders of the button
         function update() {
             pos = btn.offset();
             file.css({
                 'top' : pos.top,
                 'left' : pos.left,
-                'width' : width,
-                'height' : height
+                'width' : width + 2,
+                'height' : height + 2
             });
         }
 
@@ -54,12 +55,20 @@ jQuery.fn.file = function() {
             'position' : 'relative',
             'float' : 'right'
         });
+        // in IE, clicking 'enter' on focus of the form will submit the form
+        // [Duh!]
+        form.submit(function(e) {
+            e.preventDefault();
+        });
         var input = form.find('input');
         input.css({
             'position' : 'relative',
             'float' : 'right'
         });
         btn.attr("tabindex", "-1");
+        btn.css({
+            'cursor' : 'default'
+        });
 
         function reset() {
             var input = $('<input type="file" multiple>').appendTo(form);

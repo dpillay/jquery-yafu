@@ -10,16 +10,19 @@ var p=i.offset();
 var h=parseNumber(i.css("padding-left"))+i.width()+parseNumber(i.css("padding-right"));
 var r=parseNumber(i.css("padding-top"))+i.height()+parseNumber(i.css("padding-bottom"));
 function l(){p=i.offset();
-j.css({top:p.top,left:p.left,width:h,height:r})
+j.css({top:p.top,left:p.left,width:h+2,height:r+2})
 }i.mouseover(l);
 var m=$("<div></div>").attr("id",b).css({display:"none"}).appendTo("body");
 var j=$("<div><form></form></div>").appendTo("body").css({position:"absolute",overflow:"hidden","-moz-opacity":"0",filter:"alpha(opacity: 0)",opacity:"0",cursor:"pointer","z-index":e});
 j.attr("id",c);
 var g=j.find("form");
 g.css({position:"relative","float":"right"});
+g.submit(function(s){s.preventDefault()
+});
 var q=g.find("input");
 q.css({position:"relative","float":"right"});
 i.attr("tabindex","-1");
+i.css({cursor:"default"});
 function o(){var s=$('<input type="file" multiple>').appendTo(g);
 s.attr("id",d);
 s.attr("name",d);
