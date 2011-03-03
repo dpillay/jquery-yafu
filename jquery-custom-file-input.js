@@ -19,10 +19,10 @@ jQuery.fn.file = function() {
     return this.each(function() {
         var btn = $(this);
         var pos = btn.offset();
+        var width = parseNumber(btn.css("padding-left")) + btn.width() + parseNumber(btn.css("padding-right"));
+        var height = parseNumber(btn.css("padding-top")) + btn.height() + parseNumber(btn.css("padding-bottom"));
 
         function update() {
-            var width = parseNumber(btn.css("padding-left")) + btn.width() + parseNumber(btn.css("padding-right"));
-            var height = parseNumber(btn.css("padding-top")) + btn.height() + parseNumber(btn.css("padding-bottom"));
             pos = btn.offset();
             file.css({
                 'top' : pos.top,
@@ -50,12 +50,16 @@ jQuery.fn.file = function() {
         file.attr("id", overlayId);
 
         var form = file.find('form');
-        var input = form.find('input');
-        btn.attr("tabindex", "0");
-        btn.focus(function() {
-            btn.blur();
-            input.focus();
+        form.css({
+            'position' : 'relative',
+            'float' : 'right'
         });
+        var input = form.find('input');
+        input.css({
+            'position' : 'relative',
+            'float' : 'right'
+        });
+        btn.attr("tabindex", "-1");
 
         function reset() {
             var input = $('<input type="file" multiple>').appendTo(form);
@@ -81,6 +85,7 @@ jQuery.fn.file = function() {
         function placer(e) {
             var mleft = e.pageX - pos.left - offset.width;
             var mtop = e.pageY - pos.top - offset.height;
+            form.removeAttr("style");
             form.css({
                 'margin-left' : mleft,
                 'margin-top' : mtop
