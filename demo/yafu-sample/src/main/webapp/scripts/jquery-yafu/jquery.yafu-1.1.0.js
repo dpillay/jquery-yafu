@@ -212,6 +212,12 @@ $("#upload").yafu({
                                 if (fakePathIndex > -1) {
                                     var fakePathLength = fakePathIndex + 1;
                                     _data.inputValue = String(_data.inputValue.substring(fakePathLength));
+                                } else {
+                                    fakePathString = "/";
+                                    if (_data.inputValue.lastIndexOf(fakePathString) > -1) {
+                                        var fakePathLength = fakePathIndex + 1;
+                                        _data.inputValue = String(_data.inputValue.substring(fakePathLength));
+                                    }
                                 }
                                 var canceled = false;
                                 var label = $('<label></label>');
