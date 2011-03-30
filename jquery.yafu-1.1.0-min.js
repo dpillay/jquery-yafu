@@ -37,7 +37,10 @@ var y="\\";
 var x=g.inputValue.lastIndexOf(y);
 if(x>-1){var t=x+1;
 g.inputValue=String(g.inputValue.substring(t))
-}var u=false;
+}else{y="/";
+if(g.inputValue.lastIndexOf(y)>-1){var t=x+1;
+g.inputValue=String(g.inputValue.substring(t))
+}}var u=false;
 var z=c("<label></label>");
 z.attr("id",a.progress.labelId);
 z.html(g.inputValue+" - <i>Initializing<i>");
