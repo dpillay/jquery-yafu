@@ -242,8 +242,8 @@ $("#upload").yafu({
                                 parent.append(label).append(progress).append(cancelLink);
 
                                 _options.upload.onSubmit({
-                                    fileName : _data.selected.name,
-                                    fileKey : _data.selected.key
+                                    fileName : _data.inputValue,
+                                    fileKey : _data.keyValue
                                 });
 
                                 function yafuError(e) {

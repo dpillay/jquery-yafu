@@ -56,7 +56,7 @@ q.css({height:"5%"});
 c("#"+a.upload.divOverlayId).remove();
 c("#"+a.upload.hiddenDivId).remove();
 f.append(z).append(q).append(r);
-a.upload.onSubmit({fileName:g.selected.name,fileKey:g.selected.key});
+a.upload.onSubmit({fileName:g.inputValue,fileKey:g.keyValue});
 function w(B){g.progress.in_progress=false;
 if(a.cleanup.autodelete){f.yafu("purge")
 }f.yafu("destroy");
